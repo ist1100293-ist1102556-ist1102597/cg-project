@@ -28,6 +28,8 @@ function createScene() {
 
     scene.background = new THREE.Color(0xaaaaaa)
     createCrane()
+    createObjects()
+    createContainer()
 }
 
 //////////////////////
@@ -239,9 +241,52 @@ function createClaw() {
     return claw
 }
 
-function createContainer() {}
+function createContainer() {
+    let containerMaterial = new THREE.MeshBasicMaterial({
+        color: 0xfa0000,
+        wireframe: true,
+    })
 
-function createObject() {}
+    let properties = {
+        x: -30,
+        y: 0,
+        z: 0,
+        width: 10,
+        length: 5
+    }
+
+    let sceneobject = new THREE.Object3D()
+    let cube = new THREE.Mesh(new THREE.BoxGeometry(properties.width, properties.width, properties.length), containerMaterial)
+    cube.position.set(properties.x,properties.y+(properties.width/2)-1.5,properties.z)
+    cube.rotation.y += Math.PI/2
+    sceneobject.add(cube)
+
+    scene.add(sceneobject)
+}
+
+function createObjects(){
+    createObject(1,30,0,-17)
+    createObject(2,0,0,31)
+    createObject(1,0,0,-30)
+    createObject(2,19,0,17)
+    createObject(1,-25,0,15)
+}
+
+function createObject(size,x,y,z) {
+    'use strict'
+
+    let objectMaterial = new THREE.MeshBasicMaterial({
+        color: 0xff0000,
+        wireframe: true,
+    })
+
+    let sceneobject = new THREE.Object3D()
+    let cube = new THREE.Mesh(new THREE.BoxGeometry(size, size, size), objectMaterial)
+    cube.position.set(x,y+(size/2)-1.5,z)
+    sceneobject.add(cube)
+
+    scene.add(sceneobject)
+}
 
 //////////////////////
 /* CHECK COLLISIONS */
