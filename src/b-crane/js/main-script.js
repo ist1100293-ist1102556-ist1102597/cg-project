@@ -11,6 +11,7 @@ let cameras = []
 let currentCamera
 let scene
 let renderer
+let materials = []
 
 let crane
 let arm
@@ -37,14 +38,17 @@ function createScene() {
 //////////////////////
 function createCameras() {
     'use strict'
-    cameras[0] = new THREE.PerspectiveCamera(
-        70,
-        window.innerWidth / window.innerHeight,
+
+    cameras[0] = new THREE.OrthographicCamera(
+        100 / -2,
+        100 / 2,
+        100 / 2,
+        100 / -2,
         1,
         1000
     )
-    cameras[0].position.set(10, 40, 10)
-    cameras[0].lookAt(-20, 40, -20)
+    cameras[0].position.set(-50, 30, 0)
+    cameras[0].lookAt(0, 30, 0)
 
     cameras[1] = new THREE.OrthographicCamera(
         100 / -2,
@@ -58,28 +62,37 @@ function createCameras() {
     cameras[1].lookAt(-10, 10, 0)
 
     cameras[2] = new THREE.OrthographicCamera(
-        100 / -2,
-        100 / 2,
-        100 / 2,
-        100 / -2,
+        150 / -2,
+        150 / 2,
+        150 / 2,
+        150 / -2,
         1,
         1000
     )
-    cameras[2].position.set(20, 30, 0)
-    cameras[2].lookAt(0, 30, 0)
+    cameras[2].position.set(0, 40, 0)
+    cameras[2].lookAt(0, 0, 0)
 
     cameras[3] = new THREE.OrthographicCamera(
-        150 / -2,
-        150 / 2,
-        150 / 2,
-        150 / -2,
+        100 / 2,
+        100 / -2,
+        100 / 2,
+        100 / -2,
         1,
         1000
     )
-    cameras[3].position.set(0, 40, 0)
-    cameras[3].lookAt(0, 0, 0)
+    cameras[3].position.set(40, 40, 40)
+    cameras[3].lookAt(-30, 0, -30)
 
-    currentCamera = cameras[0]
+    cameras[4] = new THREE.PerspectiveCamera(
+        70,
+        window.innerWidth / window.innerHeight,
+        1,
+        1000
+    )
+    cameras[4].position.set(40, 40, 40)
+    cameras[4].lookAt(-30, 0, -30)
+
+    currentCamera = cameras[4]
 }
 
 ////////////////////////
@@ -101,8 +114,8 @@ function createTower() {
     let tower = new THREE.Object3D()
     let towerMaterial = new THREE.MeshBasicMaterial({
         color: 0x00ff00,
-        wireframe: true,
     })
+    materials.push(towerMaterial)
     let towerBase = new THREE.Mesh(
         new THREE.BoxGeometry(6, 3, 6),
         towerMaterial
@@ -123,8 +136,8 @@ function createArm() {
     arm = new THREE.Object3D()
     let armMaterial = new THREE.MeshBasicMaterial({
         color: 0xff0000,
-        wireframe: true,
     })
+    materials.push(armMaterial)
 
     let armFront = new THREE.Mesh(new THREE.BoxGeometry(37, 2, 2), armMaterial)
     armFront.translateX(-17.5)
@@ -157,6 +170,35 @@ function createArm() {
     armApex.rotation.y += Math.PI / 6
     arm.add(armApex)
 
+    let tirantFront = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.05, 0.05, 9.8),
+        armMaterial
+    )
+    tirantFront.translateY(5.7)
+    tirantFront.rotation.z += 5 * (Math.PI / 3) + Math.PI / 120
+    tirantFront.translateY(-4.45)
+    arm.add(tirantFront)
+
+    let tirantBack1 = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.05, 0.05, 7.1),
+        armMaterial
+    )
+    tirantBack1.translateY(6.5)
+    tirantBack1.rotation.z -= 5 * (Math.PI / 3) + Math.PI / 6.5
+    tirantBack1.rotation.y -= Math.PI / 13.8
+    tirantBack1.translateY(-4.2)
+    arm.add(tirantBack1)
+
+    let tirantBack2 = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.05, 0.05, 7.1),
+        armMaterial
+    )
+    tirantBack2.translateY(6.5)
+    tirantBack2.rotation.z -= 5 * (Math.PI / 3) + Math.PI / 6.5
+    tirantBack2.rotation.y += Math.PI / 13.8
+    tirantBack2.translateY(-4.2)
+    arm.add(tirantBack2)
+
     arm.add(createCart())
 
     arm.translateY(32.5)
@@ -168,8 +210,9 @@ function createCart() {
     cart = new THREE.Object3D()
     let cartMaterial = new THREE.MeshBasicMaterial({
         color: 0x0000ff,
-        wireframe: true,
     })
+    materials.push(cartMaterial)
+
     let cartBody = new THREE.Mesh(new THREE.BoxGeometry(2, 1, 1), cartMaterial)
     cart.add(cartBody)
 
@@ -194,8 +237,8 @@ function createClaw() {
 
     let clawMaterial = new THREE.MeshBasicMaterial({
         color: 0xffff00,
-        wireframe: true,
     })
+    materials.push(clawMaterial)
 
     let clawBase = new THREE.Mesh(new THREE.BoxGeometry(2, 1, 2), clawMaterial)
     clawBase.translateY(-6)
@@ -244,45 +287,59 @@ function createClaw() {
 function createContainer() {
     let containerMaterial = new THREE.MeshBasicMaterial({
         color: 0xfa0000,
-        wireframe: true,
     })
+    materials.push(containerMaterial)
 
     let properties = {
         x: -30,
         y: 0,
         z: 0,
         width: 10,
-        length: 5
+        length: 5,
     }
 
     let sceneobject = new THREE.Object3D()
-    let cube = new THREE.Mesh(new THREE.BoxGeometry(properties.width, properties.width, properties.length), containerMaterial)
-    cube.position.set(properties.x,properties.y+(properties.width/2)-1.5,properties.z)
-    cube.rotation.y += Math.PI/2
+    let cube = new THREE.Mesh(
+        new THREE.BoxGeometry(
+            properties.width,
+            properties.width,
+            properties.length
+        ),
+        containerMaterial
+    )
+    cube.position.set(
+        properties.x,
+        properties.y + properties.width / 2 - 1.5,
+        properties.z
+    )
+    cube.rotation.y += Math.PI / 2
     sceneobject.add(cube)
 
     scene.add(sceneobject)
 }
 
-function createObjects(){
-    createObject(1,30,0,-17)
-    createObject(2,0,0,31)
-    createObject(1,0,0,-30)
-    createObject(2,19,0,17)
-    createObject(1,-25,0,15)
+function createObjects() {
+    createObject(1, 30, 0, -17)
+    createObject(2, 0, 0, 31)
+    createObject(1, 0, 0, -30)
+    createObject(2, 19, 0, 17)
+    createObject(1, -25, 0, 15)
 }
 
-function createObject(size,x,y,z) {
+function createObject(size, x, y, z) {
     'use strict'
 
     let objectMaterial = new THREE.MeshBasicMaterial({
         color: 0xff0000,
-        wireframe: true,
     })
+    materials.push(objectMaterial)
 
     let sceneobject = new THREE.Object3D()
-    let cube = new THREE.Mesh(new THREE.BoxGeometry(size, size, size), objectMaterial)
-    cube.position.set(x,y+(size/2)-1.5,z)
+    let cube = new THREE.Mesh(
+        new THREE.BoxGeometry(size, size, size),
+        objectMaterial
+    )
+    cube.position.set(x, y + size / 2 - 1.5, z)
     sceneobject.add(cube)
 
     scene.add(sceneobject)
@@ -328,6 +385,7 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight)
     document.body.appendChild(renderer.domElement)
     window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('resize', onResize)
     createScene()
     createCameras()
 
@@ -349,6 +407,13 @@ function animate() {
 ////////////////////////////
 function onResize() {
     'use strict'
+
+    renderer.setSize(window.innerWidth, window.innerHeight)
+
+    if (window.innerHeight > 0 && window.innerWidth > 0) {
+        cameras[4].aspect = window.innerWidth / window.innerHeight
+        cameras[4].updateProjectionMatrix()
+    }
 }
 
 ///////////////////////
@@ -356,7 +421,6 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict'
-
     switch (e.keyCode) {
         case 49: // 1
             switchCamera(1)
@@ -367,12 +431,70 @@ function onKeyDown(e) {
         case 51: // 3
             switchCamera(3)
             break
+        case 52: // 4
+            switchCamera(4)
+            break
+        case 53: // 5
+            switchCamera(5)
+            break
+        case 54: // 6
+            switchCamera(6)
+            break
+        case 80: // P
+            switchWireframe()
+            break
+        case 81: // Q
+            moveArm(false)
+            break
+        case 65: // A
+            moveArm(true)
+            break
+        case 87: // W
+            moveCart(false)
+            break
+        case 83: // S
+            moveCart(true)
+            break
+        case 69: // E
+            break
+        case 68: // D
+            break
     }
 }
 
 function switchCamera(n) {
     'use strict'
-    currentCamera = cameras[n]
+    currentCamera = cameras[n - 1]
+}
+
+function switchWireframe() {
+    'use strict'
+    materials.forEach((material) => {
+        material.wireframe = !material.wireframe
+    })
+}
+
+function moveArm(direction) {
+    'use strict'
+    if (direction) {
+        arm.rotation.y += 0.02
+    } else {
+        arm.rotation.y -= 0.02
+    }
+}
+
+function moveCart(direction) {
+    'use strict'
+    console.log(cart.position.x)
+    if (direction) {
+        if (cart.position.x < -6) {
+            cart.translateX(0.2)
+        }
+    } else {
+        if (cart.position.x > -35) {
+            cart.translateX(-0.2)
+        }
+    }
 }
 
 ///////////////////////
