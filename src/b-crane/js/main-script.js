@@ -555,10 +555,10 @@ function onKeyDown(e) {
         case 40: // DOWN
             moveClaw = -1
             break
-        case 82: // R
+        case 81: // Q
             moveClawArm = 1
             break
-        case 70: // F
+        case 69: // E
             moveClawArm = -1
             break
     }
@@ -594,9 +594,8 @@ function onKeyUp(e) {
         case 40: // DOWN
             moveClaw = 0
             break
-
-        case 82: // R
-        case 70: // F
+        case 81: // Q
+        case 69: // E
             moveClawArm = 0
             break
     }
