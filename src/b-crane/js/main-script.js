@@ -46,49 +46,54 @@ function createScene() {
 function createCameras() {
     'use strict'
 
+    let cameraScale = 20
+
+    let camera0zoom=cameraScale*1.3
     cameras[0] = new THREE.OrthographicCamera(
-        100 / -2,
-        100 / 2,
-        100 / 2,
-        100 / -2,
+        window.innerWidth / -camera0zoom,
+        window.innerWidth / camera0zoom,
+        window.innerHeight / camera0zoom,
+        window.innerHeight / -camera0zoom,
         1,
         1000
     )
-    cameras[0].position.set(-50, 30, 0)
-    cameras[0].lookAt(0, 30, 0)
+    cameras[0].position.set(-50, 20, 0)
+    cameras[0].lookAt(0, 20, 0)
 
+    let camera1zoom=cameraScale*1.3
     cameras[1] = new THREE.OrthographicCamera(
-        100 / -2,
-        100 / 2,
-        100 / 2,
-        100 / -2,
+        window.innerWidth / -camera1zoom,
+        window.innerWidth / camera1zoom,
+        window.innerHeight / camera1zoom,
+        window.innerHeight / -camera1zoom,
         1,
         1000
     )
-    cameras[1].position.set(-10, 10, 100)
-    cameras[1].lookAt(-10, 10, 0)
+    cameras[1].position.set(-30, 20, 30)
+    cameras[1].lookAt(0, 20, 0)
 
+    let camera2zoom = cameraScale * 0.9
     cameras[2] = new THREE.OrthographicCamera(
-        150 / -2,
-        150 / 2,
-        150 / 2,
-        150 / -2,
+        window.innerWidth / -camera2zoom,
+        window.innerWidth / camera2zoom,
+        window.innerHeight / camera2zoom,
+        window.innerHeight / -camera2zoom,
         1,
         1000
     )
-    cameras[2].position.set(0, 40, 0)
+    cameras[2].position.set(0, 50, 0)
     cameras[2].lookAt(0, 0, 0)
 
     cameras[3] = new THREE.OrthographicCamera(
-        100 / 2,
-        100 / -2,
-        100 / 2,
-        100 / -2,
+        window.innerWidth / -cameraScale,
+        window.innerWidth / cameraScale,
+        window.innerHeight / cameraScale,
+        window.innerHeight / -cameraScale,
         1,
         1000
     )
-    cameras[3].position.set(40, 40, 40)
-    cameras[3].lookAt(-30, 0, -30)
+    cameras[3].position.set(50, 55, 50)
+    cameras[3].lookAt(0, 18, 0)
 
     cameras[4] = new THREE.PerspectiveCamera(
         70,
@@ -96,8 +101,8 @@ function createCameras() {
         1,
         1000
     )
-    cameras[4].position.set(40, 40, 40)
-    cameras[4].lookAt(-30, 0, -30)
+    cameras[4].position.set(50, 55, 50)
+    cameras[4].lookAt(0, 18, 0)
 
     currentCamera = cameras[4]
 }
