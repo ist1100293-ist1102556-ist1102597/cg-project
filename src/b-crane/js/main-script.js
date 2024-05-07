@@ -12,6 +12,7 @@ let currentCamera
 let scene
 let renderer
 let materials = []
+let clawArms = []
 
 let crane
 let arm
@@ -22,6 +23,7 @@ let clock = new THREE.Clock()
 let moveArm = 0
 let moveCart = 0
 let moveClaw = 0
+let moveClawArm = 0
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -262,43 +264,69 @@ function createClaw() {
     claw.add(clawCamera)
 
     let clawArm1 = new THREE.Mesh(
-        new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1, 3, 1),
+        new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1.5, 3, 1),
         clawMaterial
     )
     clawArm1.rotation.z += Math.PI
-    clawArm1.translateY(6.8)
-    clawArm1.translateX(0.75)
-    clawArm1.rotation.y += Math.PI / 2
-    claw.add(clawArm1)
+
+clawArm1.rotation.y += Math.PI / 2
+    clawArm1.translateX(0.1)
+
+    let clawArm1Pivot = new THREE.Object3D()
+    clawArm1Pivot.translateY(-6.8)
+    clawArm1Pivot.translateX(-0.75)
+
+    clawArms.push(clawArm1Pivot)
+    clawArm1Pivot.add(clawArm1)
+    claw.add(clawArm1Pivot)
 
     let clawArm2 = new THREE.Mesh(
-        new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1, 3, 1),
+        new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1.5, 3, 1),
         clawMaterial
     )
     clawArm2.rotation.z += Math.PI
-    clawArm2.translateY(6.8)
-    clawArm2.translateX(-0.75)
+
     clawArm2.rotation.y -= Math.PI / 2
-    claw.add(clawArm2)
+    clawArm2.translateX(-0.1)
+
+    let clawArm2Pivot = new THREE.Object3D()
+    clawArm2Pivot.translateY(-6.8)
+    clawArm2Pivot.translateX(0.75)
+
+    clawArms.push(clawArm2Pivot)
+    clawArm2Pivot.add(clawArm2)
+    claw.add(clawArm2Pivot)
 
     let clawArm3 = new THREE.Mesh(
-        new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1, 3, 1),
+        new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1.5, 3, 1),
         clawMaterial
     )
     clawArm3.rotation.z += Math.PI
     clawArm3.rotation.y += Math.PI
-    clawArm3.translateY(6.8)
-    clawArm3.translateZ(-0.75)
-    claw.add(clawArm3)
+    clawArm3.translateZ(-0.1)
+
+    let clawArm3Pivot = new THREE.Object3D()
+    clawArm3Pivot.translateY(-6.8)
+    clawArm3Pivot.translateZ(0.75)
+
+    clawArms.push(clawArm3Pivot)
+    clawArm3Pivot.add(clawArm3)
+    claw.add(clawArm3Pivot)
 
     let clawArm4 = new THREE.Mesh(
-        new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1, 3, 1),
+        new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1.5, 3, 1),
         clawMaterial
     )
     clawArm4.rotation.z += Math.PI
-    clawArm4.translateY(6.8)
-    clawArm4.translateZ(-0.75)
-    claw.add(clawArm4)
+    clawArm4.translateZ(0.1)
+
+    let clawArm4Pivot = new THREE.Object3D()
+    clawArm4Pivot.translateY(-6.8)
+    clawArm4Pivot.translateZ(-0.75)
+
+    clawArms.push(clawArm4Pivot)
+    clawArm4Pivot.add(clawArm4)
+    claw.add(clawArm4Pivot)
 
     return claw
 }
@@ -405,6 +433,20 @@ function update(delta) {
         cartCable.scale.y += 10 * delta
         cartCable.translateY(-5 * delta)
     }
+
+    if (moveClawArm === 1) {
+        clawArms[0].rotation.x += 1.5 * delta
+        clawArms[1].rotation.x -= 1.5 * delta
+        clawArms[2].rotation.x += 1.5 * delta
+        clawArms[3].rotation.x -= 1.5 * delta
+    }
+
+    if (moveClawArm === -1) {
+        clawArms[0].rotation.x -= 1.5 * delta
+        clawArms[1].rotation.x += 1.5 * delta
+        clawArms[2].rotation.x -= 1.5 * delta
+        clawArms[3].rotation.x += 1.5 * delta
+    }
 }
 
 /////////////
@@ -504,6 +546,12 @@ function onKeyDown(e) {
         case 68: // D
             moveClaw = -1
             break
+        case 82: // R
+            moveClawArm = 1
+            break
+        case 70: // F
+            moveClawArm = -1
+            break
     }
 }
 
@@ -536,6 +584,11 @@ function onKeyUp(e) {
         case 69: // E
         case 68: // D
             moveClaw = 0
+            break
+        
+        case 82: // R
+        case 70: // F
+            moveClawArm = 0
             break
     }
 }
