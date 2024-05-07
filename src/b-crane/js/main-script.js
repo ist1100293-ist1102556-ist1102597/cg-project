@@ -257,6 +257,7 @@ function createClaw() {
     clawArm1.rotation.z += Math.PI
     clawArm1.translateY(6.8)
     clawArm1.translateX(0.75)
+    clawArm1.rotation.y += Math.PI / 2
     claw.add(clawArm1)
 
     let clawArm2 = new THREE.Mesh(
@@ -266,6 +267,7 @@ function createClaw() {
     clawArm2.rotation.z += Math.PI
     clawArm2.translateY(6.8)
     clawArm2.translateX(-0.75)
+    clawArm2.rotation.y -= Math.PI/2
     claw.add(clawArm2)
 
     let clawArm3 = new THREE.Mesh(
