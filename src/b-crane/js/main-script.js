@@ -16,7 +16,12 @@ let materials = []
 let crane
 let arm
 let cart
+let cartCable
 let claw
+let clock = new THREE.Clock()
+let moveArm = 0
+let moveCart = 0
+let moveClaw = 0
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -58,7 +63,7 @@ function createCameras() {
         1,
         1000
     )
-    cameras[1].position.set(-10, 10, 10)
+    cameras[1].position.set(-10, 10, 100)
     cameras[1].lookAt(-10, 10, 0)
 
     cameras[2] = new THREE.OrthographicCamera(
@@ -216,10 +221,11 @@ function createCart() {
     let cartBody = new THREE.Mesh(new THREE.BoxGeometry(2, 1, 1), cartMaterial)
     cart.add(cartBody)
 
-    let cartCable = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.1, 0.1, 5, 32),
+    cartCable = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.1, 0.1, 1, 32),
         cartMaterial
     )
+    cartCable.scale.y = 5
     cartCable.translateY(-3)
     cart.add(cartCable)
 
@@ -307,6 +313,7 @@ function createContainer() {
         ),
         containerMaterial
     )
+
     cube.position.set(
         properties.x,
         properties.y + properties.width / 2 - 1.5,
@@ -362,8 +369,29 @@ function handleCollisions() {
 ////////////
 /* UPDATE */
 ////////////
-function update() {
+function update(delta) {
     'use strict'
+    arm.rotation.y += 1.5 * delta * moveArm
+
+    if (moveCart === -1 && cart.position.x < -6) {
+        cart.translateX(10 * delta)
+    }
+
+    if (moveCart === 1 && cart.position.x > -35) {
+        cart.translateX(-10 * delta)
+    }
+
+    if (moveClaw === 1 && claw.position.y < 4.75) {
+        claw.translateY(10 * delta)
+        cartCable.scale.y -= 10 * delta
+        cartCable.translateY(5 * delta)
+    }
+
+    if (moveClaw === -1 && claw.position.y > -25) {
+        claw.translateY(-10 * delta)
+        cartCable.scale.y += 10 * delta
+        cartCable.translateY(-5 * delta)
+    }
 }
 
 /////////////
@@ -385,6 +413,7 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight)
     document.body.appendChild(renderer.domElement)
     window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keyup', onKeyUp)
     window.addEventListener('resize', onResize)
     createScene()
     createCameras()
@@ -397,8 +426,9 @@ function init() {
 /////////////////////
 function animate() {
     'use strict'
-
+    update(clock.getDelta())
     render()
+    clock.getDelta()
     requestAnimationFrame(animate)
 }
 
@@ -444,20 +474,22 @@ function onKeyDown(e) {
             switchWireframe()
             break
         case 81: // Q
-            moveArm(false)
+            moveArm = 1
             break
         case 65: // A
-            moveArm(true)
+            moveArm = -1
             break
         case 87: // W
-            moveCart(false)
+            moveCart = 1
             break
         case 83: // S
-            moveCart(true)
+            moveCart = -1
             break
         case 69: // E
+            moveClaw = 1
             break
         case 68: // D
+            moveClaw = -1
             break
     }
 }
@@ -474,34 +506,25 @@ function switchWireframe() {
     })
 }
 
-function moveArm(direction) {
-    'use strict'
-    if (direction) {
-        arm.rotation.y += 0.02
-    } else {
-        arm.rotation.y -= 0.02
-    }
-}
-
-function moveCart(direction) {
-    'use strict'
-    console.log(cart.position.x)
-    if (direction) {
-        if (cart.position.x < -6) {
-            cart.translateX(0.2)
-        }
-    } else {
-        if (cart.position.x > -35) {
-            cart.translateX(-0.2)
-        }
-    }
-}
-
 ///////////////////////
 /* KEY UP CALLBACK */
 ///////////////////////
 function onKeyUp(e) {
     'use strict'
+    switch (e.keyCode) {
+        case 81: // Q
+        case 65: // A
+            moveArm = 0
+            break
+        case 87: // W
+        case 83: // S
+            moveCart = 0
+            break
+        case 69: // E
+        case 68: // D
+            moveClaw = 0
+            break
+    }
 }
 
 init()
