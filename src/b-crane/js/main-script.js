@@ -250,6 +250,17 @@ function createClaw() {
     clawBase.translateY(-6)
     claw.add(clawBase)
 
+    let clawCamera = new THREE.PerspectiveCamera(
+        120,
+        window.innerWidth / window.innerHeight,
+        1,
+        1000
+    )
+    cameras[5] = clawCamera
+    clawCamera.position.set(0, -5, 0)
+    clawCamera.lookAt(clawCamera.position.x, -100, clawCamera.position.z)
+    claw.add(clawCamera)
+
     let clawArm1 = new THREE.Mesh(
         new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1, 3, 1),
         clawMaterial
@@ -267,7 +278,7 @@ function createClaw() {
     clawArm2.rotation.z += Math.PI
     clawArm2.translateY(6.8)
     clawArm2.translateX(-0.75)
-    clawArm2.rotation.y -= Math.PI/2
+    clawArm2.rotation.y -= Math.PI / 2
     claw.add(clawArm2)
 
     let clawArm3 = new THREE.Mesh(
