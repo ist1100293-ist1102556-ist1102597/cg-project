@@ -269,7 +269,7 @@ function createClaw() {
     )
     clawArm1.rotation.z += Math.PI
 
-clawArm1.rotation.y += Math.PI / 2
+    clawArm1.rotation.y += Math.PI / 2
     clawArm1.translateX(0.1)
 
     let clawArm1Pivot = new THREE.Object3D()
@@ -434,14 +434,22 @@ function update(delta) {
         cartCable.translateY(-5 * delta)
     }
 
-    if (moveClawArm === 1) {
+    if (
+        moveClawArm === 1 &&
+        clawArms[0].rotation.x < Math.PI / 6 &&
+        clawArms[1].rotation.x > -Math.PI / 6
+    ) {
         clawArms[0].rotation.x += 1.5 * delta
         clawArms[1].rotation.x -= 1.5 * delta
         clawArms[2].rotation.x += 1.5 * delta
         clawArms[3].rotation.x -= 1.5 * delta
     }
 
-    if (moveClawArm === -1) {
+    if (
+        moveClawArm === -1 &&
+        clawArms[0].rotation.x > 0 &&
+        clawArms[1].rotation.x < 0
+    ) {
         clawArms[0].rotation.x -= 1.5 * delta
         clawArms[1].rotation.x += 1.5 * delta
         clawArms[2].rotation.x -= 1.5 * delta
@@ -585,7 +593,7 @@ function onKeyUp(e) {
         case 68: // D
             moveClaw = 0
             break
-        
+
         case 82: // R
         case 70: // F
             moveClawArm = 0
