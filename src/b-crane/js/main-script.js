@@ -534,13 +534,13 @@ function onKeyDown(e) {
         case 54: // 6
             switchCamera(6)
             break
-        case 80: // P
+        case 82: // R
             switchWireframe()
             break
-        case 81: // Q
+        case 65: // D
             moveArm = 1
             break
-        case 65: // A
+        case 68: // A
             moveArm = -1
             break
         case 87: // W
@@ -549,10 +549,10 @@ function onKeyDown(e) {
         case 83: // S
             moveCart = -1
             break
-        case 69: // E
+        case 38: // UP
             moveClaw = 1
             break
-        case 68: // D
+        case 40: // DOWN
             moveClaw = -1
             break
         case 82: // R
@@ -582,16 +582,16 @@ function switchWireframe() {
 function onKeyUp(e) {
     'use strict'
     switch (e.keyCode) {
-        case 81: // Q
         case 65: // A
+        case 68: // D
             moveArm = 0
             break
         case 87: // W
         case 83: // S
             moveCart = 0
             break
-        case 69: // E
-        case 68: // D
+        case 38: // UP
+        case 40: // DOWN
             moveClaw = 0
             break
 
