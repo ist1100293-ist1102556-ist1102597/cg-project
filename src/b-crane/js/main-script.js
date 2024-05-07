@@ -436,22 +436,22 @@ function update(delta) {
 
     if (
         moveClawArm === 1 &&
-        clawArms[0].rotation.x < Math.PI / 6 &&
-        clawArms[1].rotation.x > -Math.PI / 6
+        clawArms[0].rotation.z < Math.PI / 4 &&
+        clawArms[1].rotation.z > -Math.PI / 4
     ) {
-        clawArms[0].rotation.x += 1.5 * delta
-        clawArms[1].rotation.x -= 1.5 * delta
+        clawArms[0].rotation.z += 1.5 * delta
+        clawArms[1].rotation.z -= 1.5 * delta
         clawArms[2].rotation.x += 1.5 * delta
         clawArms[3].rotation.x -= 1.5 * delta
     }
 
     if (
         moveClawArm === -1 &&
-        clawArms[0].rotation.x > 0 &&
-        clawArms[1].rotation.x < 0
+        clawArms[0].rotation.z > 0 &&
+        clawArms[1].rotation.z < 0
     ) {
-        clawArms[0].rotation.x -= 1.5 * delta
-        clawArms[1].rotation.x += 1.5 * delta
+        clawArms[0].rotation.z -= 1.5 * delta
+        clawArms[1].rotation.z += 1.5 * delta
         clawArms[2].rotation.x -= 1.5 * delta
         clawArms[3].rotation.x += 1.5 * delta
     }
