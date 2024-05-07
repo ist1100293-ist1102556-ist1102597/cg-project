@@ -253,7 +253,7 @@ function createClaw() {
     claw.add(clawBase)
 
     let clawCamera = new THREE.PerspectiveCamera(
-        120,
+        90,
         window.innerWidth / window.innerHeight,
         1,
         1000
@@ -261,6 +261,7 @@ function createClaw() {
     cameras[5] = clawCamera
     clawCamera.position.set(0, -5, 0)
     clawCamera.lookAt(clawCamera.position.x, -100, clawCamera.position.z)
+    clawCamera.rotateZ(Math.PI / 2)
     claw.add(clawCamera)
 
     let clawArm1 = new THREE.Mesh(
