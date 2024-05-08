@@ -678,6 +678,11 @@ function switchCamera(n) {
 
 function switchWireframe() {
     'use strict'
+    if (materials[0].wireframe) {
+        normalControl('keyR')
+    } else {
+        highlightControl('keyR')
+    }
     materials.forEach((material) => {
         material.wireframe = !material.wireframe
     })
