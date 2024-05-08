@@ -436,7 +436,7 @@ function handleCollisions(object) {
 
     claw.add(object)
     object.position.set(0, 0, 0)
-    object.translateY(1+0.5+object.scale.y/2)
+    object.translateY(1 + 0.5 + object.scale.y / 2)
 
     objects.remove(object)
 }
