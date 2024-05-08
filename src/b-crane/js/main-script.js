@@ -621,7 +621,7 @@ function onKeyDown(e) {
             switchCamera(4)
             break
         case 53: // 5
-            normalControlCameras() 
+            normalControlCameras()
             highlightControl('camera5')
             switchCamera(5)
             break
@@ -757,7 +757,7 @@ function createHUD() {
             <div id="camera6">[6]</div>
         </div>
     </div>
-    ` 
+    `
     div.setAttribute('class', 'container')
     document.body.appendChild(div)
     highlightControl('camera5')
@@ -773,7 +773,9 @@ function normalControl(id) {
 
 function normalControlCameras() {
     for (let i = 1; i <= 6; i++) {
-        document.getElementById('camera' + i).classList.remove('sub-container-background')
+        document
+            .getElementById('camera' + i)
+            .classList.remove('sub-container-background')
     }
 }
 
