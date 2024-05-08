@@ -12,7 +12,9 @@ let currentCamera
 let scene
 let renderer
 let materials = []
+let clawArmsPivot = []
 let clawArms = []
+let objects = []
 
 let crane
 let arm
@@ -269,22 +271,26 @@ function createClaw() {
     clawCamera.rotateZ(Math.PI / 2)
     claw.add(clawCamera)
 
+    let clawArm1Pivot = new THREE.Object3D()
+    clawArm1Pivot.translateY(-6.8)
+    clawArm1Pivot.translateX(-0.75)
+
     let clawArm1 = new THREE.Mesh(
         new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1.5, 3, 1),
         clawMaterial
     )
     clawArm1.rotation.z += Math.PI
-
     clawArm1.rotation.y += Math.PI / 2
     clawArm1.translateX(0.1)
 
-    let clawArm1Pivot = new THREE.Object3D()
-    clawArm1Pivot.translateY(-6.8)
-    clawArm1Pivot.translateX(-0.75)
-
-    clawArms.push(clawArm1Pivot)
+    clawArmsPivot.push(clawArm1Pivot)
+    clawArms.push(clawArm1)
     clawArm1Pivot.add(clawArm1)
     claw.add(clawArm1Pivot)
+
+    let clawArm2Pivot = new THREE.Object3D()
+    clawArm2Pivot.translateY(-6.8)
+    clawArm2Pivot.translateX(0.75)
 
     let clawArm2 = new THREE.Mesh(
         new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1.5, 3, 1),
@@ -295,13 +301,14 @@ function createClaw() {
     clawArm2.rotation.y -= Math.PI / 2
     clawArm2.translateX(-0.1)
 
-    let clawArm2Pivot = new THREE.Object3D()
-    clawArm2Pivot.translateY(-6.8)
-    clawArm2Pivot.translateX(0.75)
-
-    clawArms.push(clawArm2Pivot)
+    clawArmsPivot.push(clawArm2Pivot)
+    clawArms.push(clawArm2)
     clawArm2Pivot.add(clawArm2)
     claw.add(clawArm2Pivot)
+
+    let clawArm3Pivot = new THREE.Object3D()
+    clawArm3Pivot.translateY(-6.8)
+    clawArm3Pivot.translateZ(0.75)
 
     let clawArm3 = new THREE.Mesh(
         new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1.5, 3, 1),
@@ -311,13 +318,14 @@ function createClaw() {
     clawArm3.rotation.y += Math.PI
     clawArm3.translateZ(-0.1)
 
-    let clawArm3Pivot = new THREE.Object3D()
-    clawArm3Pivot.translateY(-6.8)
-    clawArm3Pivot.translateZ(0.75)
-
-    clawArms.push(clawArm3Pivot)
+    clawArmsPivot.push(clawArm3Pivot)
+    clawArms.push(clawArm3)
     clawArm3Pivot.add(clawArm3)
     claw.add(clawArm3Pivot)
+
+    let clawArm4Pivot = new THREE.Object3D()
+    clawArm4Pivot.translateY(-6.8)
+    clawArm4Pivot.translateZ(-0.75)
 
     let clawArm4 = new THREE.Mesh(
         new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1.5, 3, 1),
@@ -326,11 +334,8 @@ function createClaw() {
     clawArm4.rotation.z += Math.PI
     clawArm4.translateZ(0.1)
 
-    let clawArm4Pivot = new THREE.Object3D()
-    clawArm4Pivot.translateY(-6.8)
-    clawArm4Pivot.translateZ(-0.75)
-
-    clawArms.push(clawArm4Pivot)
+    clawArmsPivot.push(clawArm4Pivot)
+    clawArms.push(clawArm4)
     clawArm4Pivot.add(clawArm4)
     claw.add(clawArm4Pivot)
 
@@ -402,8 +407,23 @@ function createObject(size, x, y, z) {
 //////////////////////
 /* CHECK COLLISIONS */
 //////////////////////
-function checkCollisions() {
+function checkCollisions(object) {
     'use strict'
+    let x = object.scale.x / 2 ** 2
+    let y = object.scale.y / 2 ** 2
+    let z = object.scale.z / 2 ** 2
+    let objectRadius = Math.sqrt(x + y + z)
+
+    let armRadius = 0.7
+
+    clawArms.forEach((arm) => {
+        let d = arm.getWorldPosition().distanceTo(object.getWorldPosition())
+        if (d < armRadius + objectRadius) {
+            handleCollisions()
+        }
+    })
+
+
 }
 
 ///////////////////////
@@ -442,24 +462,24 @@ function update(delta) {
 
     if (
         moveClawArm === 1 &&
-        clawArms[0].rotation.z < Math.PI / 4 &&
-        clawArms[1].rotation.z > -Math.PI / 4
+        clawArmsPivot[0].rotation.z < Math.PI / 4 &&
+        clawArmsPivot[1].rotation.z > -Math.PI / 4
     ) {
-        clawArms[0].rotation.z += 1.5 * delta
-        clawArms[1].rotation.z -= 1.5 * delta
-        clawArms[2].rotation.x += 1.5 * delta
-        clawArms[3].rotation.x -= 1.5 * delta
+        clawArmsPivot[0].rotation.z += 1.5 * delta
+        clawArmsPivot[1].rotation.z -= 1.5 * delta
+        clawArmsPivot[2].rotation.x += 1.5 * delta
+        clawArmsPivot[3].rotation.x -= 1.5 * delta
     }
 
     if (
         moveClawArm === -1 &&
-        clawArms[0].rotation.z > 0 &&
-        clawArms[1].rotation.z < 0
+        clawArmsPivot[0].rotation.z > 0 &&
+        clawArmsPivot[1].rotation.z < 0
     ) {
-        clawArms[0].rotation.z -= 1.5 * delta
-        clawArms[1].rotation.z += 1.5 * delta
-        clawArms[2].rotation.x -= 1.5 * delta
-        clawArms[3].rotation.x += 1.5 * delta
+        clawArmsPivot[0].rotation.z -= 1.5 * delta
+        clawArmsPivot[1].rotation.z += 1.5 * delta
+        clawArmsPivot[2].rotation.x -= 1.5 * delta
+        clawArmsPivot[3].rotation.x += 1.5 * delta
     }
 }
 
@@ -496,6 +516,9 @@ function init() {
 function animate() {
     'use strict'
     update(clock.getDelta())
+    objects.forEach((object) => {
+        checkCollisions(object)
+    })
     render()
     clock.getDelta()
     requestAnimationFrame(animate)
