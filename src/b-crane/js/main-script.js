@@ -505,13 +505,13 @@ function update(delta) {
         cart.translateX(-10 * delta)
     }
 
-    if (moveClaw === 1 && claw.position.y < 4.75) {
+    if (moveClaw === 1 && claw.position.y < -1.5) {
         claw.translateY(10 * delta)
         cartCable.scale.y -= 10 * delta
         cartCable.translateY(5 * delta)
     }
 
-    if (moveClaw === -1 && claw.position.y > -25) {
+    if (moveClaw === -1 && claw.position.y > -31.25) {
         claw.translateY(-10 * delta)
         cartCable.scale.y += 10 * delta
         cartCable.translateY(-5 * delta)
