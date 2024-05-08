@@ -436,11 +436,11 @@ function createObject(size, x, y, z) {
 //////////////////////
 /* CHECK COLLISIONS */
 //////////////////////
-function checkCollisions(object) {
+function checkCollisionsWithClaw(object) {
     'use strict'
-    let x = object.scale.x / 2 ** 2
-    let y = object.scale.y / 2 ** 2
-    let z = object.scale.z / 2 ** 2
+    let x = (object.scale.x / 2) ** 2
+    let y = (object.scale.y / 2) ** 2
+    let z = (object.scale.z / 2) ** 2
     let objectRadius = Math.sqrt(x + y + z)
 
     let armRadius = 0.7
@@ -452,6 +452,25 @@ function checkCollisions(object) {
             handleCollisions(object)
         }
     })
+}
+
+function checkCollisions(object1, object2) {
+    'use strict'
+    let x1 = (object1.scale.x / 2) ** 2
+    let y1 = (object1.scale.y / 2) ** 2
+    let z1 = (object1.scale.z / 2) ** 2
+    let objectRadius1 = Math.sqrt(x1 + y1 + z1)
+
+    let x2 = (object2.scale.x / 2) ** 2
+    let y2 = (object2.scale.y / 2) ** 2
+    let z2 = (object2.scale.z / 2) ** 2
+    let objectRadius2 = Math.sqrt(x2 + y2 + z2)
+
+    let d = object1.getWorldPosition().distanceTo(object2.getWorldPosition())
+    if (d < objectRadius1 + objectRadius2) {
+        return true
+    }
+    return false
 }
 
 ///////////////////////
@@ -554,7 +573,7 @@ function animate() {
     update(clock.getDelta())
     objects.forEach((object) => {
         if (animationMode === 1) return
-        checkCollisions(object)
+        checkCollisionsWithClaw(object)
     })
     render()
     clock.getDelta()
