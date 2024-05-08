@@ -18,6 +18,7 @@ let arm
 let cart
 let cartCable
 let claw
+let container
 let clock = new THREE.Clock()
 let moveArm = 0
 let moveCart = 0
@@ -36,8 +37,10 @@ function createScene() {
 
     scene.background = new THREE.Color(0xa1ffff)
     createCrane()
-    createObjects()
     createContainer()
+    createObjects()
+
+    objects.splice(objects.indexOf(container), 1)
 }
 
 //////////////////////
@@ -376,60 +379,74 @@ function createContainer() {
     })
     materials.push(containerMaterial)
 
-    let properties = {
-        x: -30,
-        y: 0,
-        z: 0,
-        width: 10,
-        length: 5,
-    }
-
-    let sceneobject = new THREE.Object3D()
-    let cube = new THREE.Mesh(
-        new THREE.BoxGeometry(
-            properties.width,
-            properties.width,
-            properties.length
-        ),
+    container = new THREE.Mesh(
+        new THREE.BoxGeometry(1, 1, 1),
         containerMaterial
     )
+    container.scale.set(5, 5, 10)
 
-    cube.position.set(
-        properties.x,
-        properties.y + properties.width / 2 - 1.5,
-        properties.z
-    )
-    cube.rotation.y += Math.PI / 2
-    sceneobject.add(cube)
-
-    scene.add(sceneobject)
+    container.position.set(-30, 5 / 2 - 1.5, 0)
+    objects.push(container)
+    scene.add(container)
 }
 
 function createObjects() {
-    createObject(1, 30, 0, -17)
-    createObject(2, 0, 0, 31)
-    createObject(1, 0, 0, -30)
-    createObject(2, 19, 0, 17)
-    createObject(1, -25, 0, 15)
-}
-
-function createObject(size, x, y, z) {
-    'use strict'
-
     let objectMaterial = new THREE.MeshBasicMaterial({
         color: 0x00ab44,
     })
     materials.push(objectMaterial)
 
-    let sceneobject = new THREE.Object3D()
-    let cube = new THREE.Mesh(
-        new THREE.BoxGeometry(size, size, size),
-        objectMaterial
-    )
-    cube.position.set(x, y + size / 2 - 1.5, z)
-    sceneobject.add(cube)
+    createObject(objectMaterial)
+    createObject(objectMaterial)
+    createObject(objectMaterial)
+    createObject(objectMaterial)
+    createObject(objectMaterial)
+}
 
-    scene.add(sceneobject)
+function createObject(objectMaterial) {
+    'use strict'
+
+    let size = randomBetween(0.5, 2)
+
+    let cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), objectMaterial)
+
+    cube.scale.set(size, size, size)
+
+    while (true) {
+        let position = getRandomPosition(size)
+        cube.position.set(
+            position.get('x'),
+            position.get('y'),
+            position.get('z')
+        )
+        scene.add(cube)
+        if (
+            !objects.reduce(
+                (current, obj) => current || checkCollisions(cube, obj),
+                false
+            )
+        ) {
+            objects.push(cube)
+            break
+        }
+        scene.remove(cube)
+    }
+}
+
+function randomBetween(min, max) {
+    return Math.random() * (max - min) + min
+}
+
+function getRandomPosition(size) {
+    let r = randomBetween(7.5, 30)
+    let theta = randomBetween(0, 2 * Math.PI)
+
+    let result = new Map()
+    result.set('x', r * Math.cos(theta))
+    result.set('y', size / 2 - 1.5)
+    result.set('z', r * Math.sin(theta))
+
+    return result
 }
 
 //////////////////////
@@ -443,10 +460,11 @@ function checkCollisionsWithClaw(object) {
     let objectRadius = Math.sqrt(x + y + z)
 
     let armRadius = 0.7
-
     clawArms.forEach((arm) => {
         if (animationMode === 1) return
-        let d = arm.getWorldPosition().distanceTo(object.getWorldPosition())
+        let d = arm
+            .getWorldPosition(new THREE.Vector3())
+            .distanceTo(object.getWorldPosition(new THREE.Vector3()))
         if (d < armRadius + objectRadius) {
             handleCollisions(object)
         }
@@ -465,7 +483,9 @@ function checkCollisions(object1, object2) {
     let z2 = (object2.scale.z / 2) ** 2
     let objectRadius2 = Math.sqrt(x2 + y2 + z2)
 
-    let d = object1.getWorldPosition().distanceTo(object2.getWorldPosition())
+    let d = object1
+        .getWorldPosition(new THREE.Vector3())
+        .distanceTo(object2.getWorldPosition(new THREE.Vector3()))
     if (d < objectRadius1 + objectRadius2) {
         return true
     }
@@ -482,9 +502,9 @@ function handleCollisions(object) {
 
     claw.add(object)
     object.position.set(0, 0, 0)
-    object.translateY(1 + 0.5 + object.scale.y / 2)
+    object.translateY(-(0.3 + object.scale.y / 2))
 
-    objects.remove(object)
+    objects.splice(objects.indexOf(object), 1)
 }
 
 ////////////
