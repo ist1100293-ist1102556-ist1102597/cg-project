@@ -37,7 +37,7 @@ function createScene() {
 
     scene.add(new THREE.AxesHelper(10))
 
-    scene.background = new THREE.Color(0xe0ffff)
+    scene.background = new THREE.Color(0xa1ffff)
     createCrane()
     createObjects()
     createContainer()
