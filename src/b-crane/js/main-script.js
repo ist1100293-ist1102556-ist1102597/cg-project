@@ -48,7 +48,7 @@ function createCameras() {
 
     let cameraScale = 20
 
-    let camera0zoom=cameraScale*1.3
+    let camera0zoom = cameraScale * 1.3
     cameras[0] = new THREE.OrthographicCamera(
         window.innerWidth / -camera0zoom,
         window.innerWidth / camera0zoom,
@@ -60,7 +60,7 @@ function createCameras() {
     cameras[0].position.set(-50, 20, 0)
     cameras[0].lookAt(0, 20, 0)
 
-    let camera1zoom=cameraScale*1.3
+    let camera1zoom = cameraScale * 1.3
     cameras[1] = new THREE.OrthographicCamera(
         window.innerWidth / -camera1zoom,
         window.innerWidth / camera1zoom,
@@ -258,7 +258,7 @@ function createClaw() {
     claw.add(clawBase)
 
     let clawCamera = new THREE.PerspectiveCamera(
-        90,
+        120,
         window.innerWidth / window.innerHeight,
         1,
         1000
