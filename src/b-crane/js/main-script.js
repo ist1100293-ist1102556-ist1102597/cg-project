@@ -37,7 +37,7 @@ function createScene() {
 
     scene.add(new THREE.AxesHelper(10))
 
-    scene.background = new THREE.Color(0xaaaaaa)
+    scene.background = new THREE.Color(0xe0ffff)
     createCrane()
     createObjects()
     createContainer()
@@ -128,7 +128,7 @@ function createTower() {
     'use strict'
     let tower = new THREE.Object3D()
     let towerMaterial = new THREE.MeshBasicMaterial({
-        color: 0x00ff00,
+        color: 0xeb8c34,
     })
     materials.push(towerMaterial)
     let towerBase = new THREE.Mesh(
@@ -150,27 +150,42 @@ function createArm() {
     'use strict'
     arm = new THREE.Object3D()
     let armMaterial = new THREE.MeshBasicMaterial({
-        color: 0xff0000,
+        color: 0xfaa555,
     })
     materials.push(armMaterial)
+
+    let cabinMaterial = new THREE.MeshBasicMaterial({
+        color: 0x25a8a7,
+    })
+    materials.push(cabinMaterial)
+
+    let tirantMaterial = new THREE.MeshBasicMaterial({
+        color: 0x4f4f4f,
+    })
+    materials.push(tirantMaterial)
+
+    let cWeightMaterial = new THREE.MeshBasicMaterial({
+        color: 0x303030,
+    })
+    materials.push(cWeightMaterial)
 
     let armFront = new THREE.Mesh(new THREE.BoxGeometry(37, 2, 2), armMaterial)
     armFront.translateX(-17.5)
     arm.add(armFront)
-
-    let armCabin = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), armMaterial)
-    armCabin.translateX(-3.5)
-    armCabin.translateY(-2)
-    arm.add(armCabin)
 
     let armBack = new THREE.Mesh(new THREE.BoxGeometry(5, 1.5, 2), armMaterial)
     armBack.translateX(3.5)
     armBack.translateY(-0.25)
     arm.add(armBack)
 
+    let armCabin = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), cabinMaterial)
+    armCabin.translateX(-3.5)
+    armCabin.translateY(-2)
+    arm.add(armCabin)
+
     let armCounterWeight = new THREE.Mesh(
         new THREE.BoxGeometry(2.5, 3, 1.5),
-        armMaterial
+        cWeightMaterial
     )
     armCounterWeight.translateX(4.5)
     armCounterWeight.translateY(-0.5)
@@ -187,7 +202,7 @@ function createArm() {
 
     let tirantFront = new THREE.Mesh(
         new THREE.CylinderGeometry(0.05, 0.05, 9.8),
-        armMaterial
+        tirantMaterial
     )
     tirantFront.translateY(5.7)
     tirantFront.rotation.z += 5 * (Math.PI / 3) + Math.PI / 120
@@ -196,7 +211,7 @@ function createArm() {
 
     let tirantBack1 = new THREE.Mesh(
         new THREE.CylinderGeometry(0.05, 0.05, 7.1),
-        armMaterial
+        tirantMaterial
     )
     tirantBack1.translateY(6.5)
     tirantBack1.rotation.z -= 5 * (Math.PI / 3) + Math.PI / 6.5
@@ -206,7 +221,7 @@ function createArm() {
 
     let tirantBack2 = new THREE.Mesh(
         new THREE.CylinderGeometry(0.05, 0.05, 7.1),
-        armMaterial
+        tirantMaterial
     )
     tirantBack2.translateY(6.5)
     tirantBack2.rotation.z -= 5 * (Math.PI / 3) + Math.PI / 6.5
@@ -224,16 +239,21 @@ function createCart() {
     'use strict'
     cart = new THREE.Object3D()
     let cartMaterial = new THREE.MeshBasicMaterial({
-        color: 0x0000ff,
+        color: 0x303030,
     })
     materials.push(cartMaterial)
+
+    let cartCableMaterial = new THREE.MeshBasicMaterial({
+        color: 0x4f4f4f,
+    })
+    materials.push(cartCableMaterial)
 
     let cartBody = new THREE.Mesh(new THREE.BoxGeometry(2, 1, 1), cartMaterial)
     cart.add(cartBody)
 
     cartCable = new THREE.Mesh(
         new THREE.CylinderGeometry(0.1, 0.1, 1, 32),
-        cartMaterial
+        cartCableMaterial
     )
     cartCable.scale.y = 5
     cartCable.translateY(-3)
@@ -251,12 +271,20 @@ function createClaw() {
 
     claw = new THREE.Object3D()
 
-    let clawMaterial = new THREE.MeshBasicMaterial({
-        color: 0xffff00,
+    let clawBaseMaterial = new THREE.MeshBasicMaterial({
+        color: 0xeb8c34,
     })
-    materials.push(clawMaterial)
+    materials.push(clawBaseMaterial)
 
-    let clawBase = new THREE.Mesh(new THREE.BoxGeometry(2, 1, 2), clawMaterial)
+    let clawArmMaterial = new THREE.MeshBasicMaterial({
+        color: 0xfaa555,
+    })
+    materials.push(clawArmMaterial)
+
+    let clawBase = new THREE.Mesh(
+        new THREE.BoxGeometry(2, 1, 2),
+        clawBaseMaterial
+    )
     clawBase.translateY(-6)
     claw.add(clawBase)
 
@@ -278,7 +306,7 @@ function createClaw() {
 
     let clawArm1 = new THREE.Mesh(
         new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1.5, 3, 1),
-        clawMaterial
+        clawArmMaterial
     )
     clawArm1.rotation.z += Math.PI
     clawArm1.rotation.y += Math.PI / 2
@@ -295,7 +323,7 @@ function createClaw() {
 
     let clawArm2 = new THREE.Mesh(
         new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1.5, 3, 1),
-        clawMaterial
+        clawArmMaterial
     )
     clawArm2.rotation.z += Math.PI
 
@@ -313,7 +341,7 @@ function createClaw() {
 
     let clawArm3 = new THREE.Mesh(
         new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1.5, 3, 1),
-        clawMaterial
+        clawArmMaterial
     )
     clawArm3.rotation.z += Math.PI
     clawArm3.rotation.y += Math.PI
@@ -330,7 +358,7 @@ function createClaw() {
 
     let clawArm4 = new THREE.Mesh(
         new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1.5, 3, 1),
-        clawMaterial
+        clawArmMaterial
     )
     clawArm4.rotation.z += Math.PI
     clawArm4.translateZ(0.1)
@@ -345,7 +373,7 @@ function createClaw() {
 
 function createContainer() {
     let containerMaterial = new THREE.MeshBasicMaterial({
-        color: 0xfa0000,
+        color: 0xd10202,
     })
     materials.push(containerMaterial)
 
@@ -390,7 +418,7 @@ function createObject(size, x, y, z) {
     'use strict'
 
     let objectMaterial = new THREE.MeshBasicMaterial({
-        color: 0xff0000,
+        color: 0x00ab44,
     })
     materials.push(objectMaterial)
 
