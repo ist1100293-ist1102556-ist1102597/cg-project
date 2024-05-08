@@ -564,6 +564,7 @@ function init() {
     createScene()
     createCameras()
 
+    createHUD()
     render()
 }
 
@@ -603,48 +604,68 @@ function onKeyDown(e) {
     'use strict'
     switch (e.keyCode) {
         case 49: // 1
+            normalControlCameras()
+            highlightControl('camera1')
             switchCamera(1)
             break
         case 50: // 2
+            normalControlCameras()
+            highlightControl('camera2')
             switchCamera(2)
             break
         case 51: // 3
+            normalControlCameras()
+            highlightControl('camera3')
             switchCamera(3)
             break
         case 52: // 4
+            normalControlCameras()
+            highlightControl('camera4')
             switchCamera(4)
             break
         case 53: // 5
+            normalControlCameras() 
+            highlightControl('camera5')
             switchCamera(5)
             break
         case 54: // 6
+            normalControlCameras()
+            highlightControl('camera6')
             switchCamera(6)
             break
         case 82: // R
             switchWireframe()
             break
-        case 65: // D
+        case 65: // A
+            highlightControl('keyA')
             moveArm = 1
             break
-        case 68: // A
+        case 68: // D
+            highlightControl('keyD')
             moveArm = -1
             break
         case 87: // W
+            highlightControl('keyW')
             moveCart = 1
             break
         case 83: // S
+            highlightControl('keyS')
             moveCart = -1
             break
         case 38: // UP
+            highlightControl('keyArrowUp')
             moveClaw = 1
             break
         case 40: // DOWN
+            highlightControl('keyArrowDown')
             moveClaw = -1
             break
         case 81: // Q
+            highlightControl('keyQ')
             moveClawArm = 1
             break
         case 69: // E
+            highlightControl('keyE')
             moveClawArm = -1
             break
     }
@@ -670,20 +691,87 @@ function onKeyUp(e) {
     switch (e.keyCode) {
         case 65: // A
         case 68: // D
+            normalControl('keyA')
+            normalControl('keyD')
             moveArm = 0
             break
         case 87: // W
         case 83: // S
+            normalControl('keyW')
+            normalControl('keyS')
             moveCart = 0
             break
         case 38: // UP
         case 40: // DOWN
+            normalControl('keyArrowUp')
+            normalControl('keyArrowDown')
             moveClaw = 0
             break
         case 81: // Q
         case 69: // E
+            normalControl('keyQ')
+            normalControl('keyE')
             moveClawArm = 0
             break
+    }
+}
+
+function createHUD() {
+    'use strict'
+    let div = document.createElement('div')
+    div.innerHTML = `
+    <div class="container">
+        <div class="sub-container">
+            <h4>Braço</h4>
+            <div id="keyA">[A]</div>
+            <div id="keyD">[D]</div>
+        </div>
+        <div class="sub-container">
+            <h4>Carrinho</h4>
+            <div id="keyW">[W]</div>
+            <div id="keyS">[S]</div>
+        </div>
+        <div class="sub-container">
+            <h4>Garra</h4>
+            <div id="keyArrowUp">[↑]</div>
+            <div id="keyArrowDown">[↓]</div>
+        </div>
+        <div class="sub-container">
+            <h4>Pinças</h4>
+            <div id="keyQ">[Q]</div>
+            <div id="keyE">[E]</div>
+        </div>
+        <div class="sub-container">
+            <h4>Wireframe</h4>
+            <div id="keyR" >[R]</div>
+        </div>
+        <div class="sub-container">
+            <h4>Câmaras</h4>
+            <div id="camera1">[1]</div>
+            <div id="camera2">[2]</div>
+            <div id="camera3">[3]</div>
+            <div id="camera4">[4]</div>
+            <div id="camera5">[5]</div>
+            <div id="camera6">[6]</div>
+        </div>
+    </div>
+    ` 
+    div.setAttribute('class', 'container')
+    document.body.appendChild(div)
+    highlightControl('camera5')
+}
+
+function highlightControl(id) {
+    document.getElementById(id).classList.add('sub-container-background')
+}
+
+function normalControl(id) {
+    document.getElementById(id).classList.remove('sub-container-background')
+}
+
+function normalControlCameras() {
+    for (let i = 1; i <= 6; i++) {
+        document.getElementById('camera' + i).classList.remove('sub-container-background')
     }
 }
 
