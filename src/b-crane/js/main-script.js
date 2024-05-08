@@ -285,7 +285,6 @@ function createClaw() {
         new THREE.BoxGeometry(2, 1, 2),
         clawBaseMaterial
     )
-    clawBase.translateY(-6)
     claw.add(clawBase)
 
     let clawCamera = new THREE.PerspectiveCamera(
@@ -295,19 +294,19 @@ function createClaw() {
         1000
     )
     cameras[5] = clawCamera
-    clawCamera.position.set(0, -5, 0)
+    clawCamera.position.set(0, 1, 0)
     clawCamera.lookAt(clawCamera.position.x, -100, clawCamera.position.z)
     clawCamera.rotateZ(Math.PI / 2)
     claw.add(clawCamera)
 
     let clawArm1Pivot = new THREE.Object3D()
-    clawArm1Pivot.translateY(-6.8)
-    clawArm1Pivot.translateX(-0.75)
 
     let clawArm1 = new THREE.Mesh(
-        new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1.5, 3, 1),
+        new THREE.ConeGeometry(0.3, 2, 3, 1),
         clawArmMaterial
     )
+    clawArm1.translateY(-0.7)
+    clawArm1.translateX(-1)
     clawArm1.rotation.z += Math.PI
     clawArm1.rotation.y += Math.PI / 2
     clawArm1.translateX(0.1)
@@ -318,15 +317,15 @@ function createClaw() {
     claw.add(clawArm1Pivot)
 
     let clawArm2Pivot = new THREE.Object3D()
-    clawArm2Pivot.translateY(-6.8)
-    clawArm2Pivot.translateX(0.75)
 
     let clawArm2 = new THREE.Mesh(
-        new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1.5, 3, 1),
+        new THREE.ConeGeometry(0.3, 2, 3, 1),
         clawArmMaterial
     )
-    clawArm2.rotation.z += Math.PI
 
+    clawArm2.translateY(-0.7)
+    clawArm2.translateX(1)
+    clawArm2.rotation.z += Math.PI
     clawArm2.rotation.y -= Math.PI / 2
     clawArm2.translateX(-0.1)
 
@@ -336,13 +335,13 @@ function createClaw() {
     claw.add(clawArm2Pivot)
 
     let clawArm3Pivot = new THREE.Object3D()
-    clawArm3Pivot.translateY(-6.8)
-    clawArm3Pivot.translateZ(0.75)
 
     let clawArm3 = new THREE.Mesh(
-        new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1.5, 3, 1),
+        new THREE.ConeGeometry(0.3, 2, 3, 1),
         clawArmMaterial
     )
+    clawArm3.translateY(-0.7)
+    clawArm3.translateZ(1)
     clawArm3.rotation.z += Math.PI
     clawArm3.rotation.y += Math.PI
     clawArm3.translateZ(-0.1)
@@ -353,13 +352,14 @@ function createClaw() {
     claw.add(clawArm3Pivot)
 
     let clawArm4Pivot = new THREE.Object3D()
-    clawArm4Pivot.translateY(-6.8)
-    clawArm4Pivot.translateZ(-0.75)
 
     let clawArm4 = new THREE.Mesh(
-        new THREE.ConeGeometry(0.25 * Math.sin(Math.PI / 3), 1.5, 3, 1),
+        new THREE.ConeGeometry(0.3, 2, 3, 1),
         clawArmMaterial
     )
+
+    clawArm4.translateY(-0.7)
+    clawArm4.translateZ(-1)
     clawArm4.rotation.z += Math.PI
     clawArm4.translateZ(0.1)
 
@@ -367,6 +367,8 @@ function createClaw() {
     clawArms.push(clawArm4)
     clawArm4Pivot.add(clawArm4)
     claw.add(clawArm4Pivot)
+
+    claw.translateY(-6)
 
     return claw
 }
@@ -517,8 +519,8 @@ function update(delta) {
 
     if (
         moveClawArm === 1 &&
-        clawArmsPivot[0].rotation.z < Math.PI / 4 &&
-        clawArmsPivot[1].rotation.z > -Math.PI / 4
+        clawArmsPivot[0].rotation.z < Math.PI / 6 &&
+        clawArmsPivot[1].rotation.z > -Math.PI / 6
     ) {
         clawArmsPivot[0].rotation.z += 1.5 * delta
         clawArmsPivot[1].rotation.z -= 1.5 * delta
