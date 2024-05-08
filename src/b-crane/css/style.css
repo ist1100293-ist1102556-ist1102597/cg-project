@@ -36,6 +36,6 @@ h4 {
     background-color: #f0f0f0;
 }
 
-.text {
-    font-family: 'Times New Roman', Times, serif;
+* {
+    font-family: monospace;
 }
