@@ -26,6 +26,7 @@ let moveArm = 0
 let moveCart = 0
 let moveClaw = 0
 let moveClawArm = 0
+let animationMode = 0
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -417,20 +418,27 @@ function checkCollisions(object) {
     let armRadius = 0.7
 
     clawArms.forEach((arm) => {
+        if (animationMode === 1) return
         let d = arm.getWorldPosition().distanceTo(object.getWorldPosition())
         if (d < armRadius + objectRadius) {
-            handleCollisions()
+            handleCollisions(object)
         }
     })
-
-
 }
 
 ///////////////////////
 /* HANDLE COLLISIONS */
 ///////////////////////
-function handleCollisions() {
+function handleCollisions(object) {
     'use strict'
+    animationMode = 1
+    scene.remove(object)
+
+    claw.add(object)
+    object.position.set(0, 0, 0)
+    object.translateY(1+0.5+object.scale.y/2)
+
+    objects.remove(object)
 }
 
 ////////////
@@ -517,6 +525,7 @@ function animate() {
     'use strict'
     update(clock.getDelta())
     objects.forEach((object) => {
+        if (animationMode === 1) return
         checkCollisions(object)
     })
     render()
