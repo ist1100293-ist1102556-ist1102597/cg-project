@@ -30,7 +30,7 @@ let state = {
         stage: 0,
         moveArm: false,
         moveCart: false,
-    }
+    },
 }
 
 /////////////////////
@@ -413,30 +413,50 @@ function createObjects() {
 function createObject(objectMaterial) {
     'use strict'
 
-    let size = randomBetween(0.5, 2)
+    let size = randomBetween(1, 2.5)
 
-    let cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), objectMaterial)
+    let geometry
+    let multiplier
+    switch (Math.floor(randomBetween(0, 4))) {
+        case 0:
+            geometry = new THREE.BoxGeometry(1, 1, 1)
+            multiplier = 0.5
+            break
+        case 1:
+            geometry = new THREE.DodecahedronGeometry(1)
+            multiplier = 0.94
+            break
+        case 2:
+            geometry = new THREE.IcosahedronGeometry(1)
+            multiplier = 0.865
+            break
+        case 3:
+            geometry = new THREE.TorusGeometry(0.7, 0.15)
+            multiplier = 0.85
+            break
+        default:
+            geometry = new THREE.BoxGeometry(1, 1, 1)
+    }
 
-    cube.scale.set(size, size, size)
+    let obj = new THREE.Mesh(geometry, objectMaterial)
+    obj.userData = { size: size, multiplier: multiplier }
+    obj.scale.set(size, size, size)
+    obj.rotateY(randomBetween(0, 2 * Math.PI))
 
     while (true) {
-        let position = getRandomPosition(size)
-        cube.position.set(
-            position.get('x'),
-            position.get('y'),
-            position.get('z')
-        )
-        scene.add(cube)
+        let position = getRandomPosition(size, multiplier)
+        obj.position.set(position.x, position.y, position.z)
+        scene.add(obj)
         if (
             !objects.reduce(
-                (current, obj) => current || checkCollisions(cube, obj),
+                (current, other) => current || checkCollisions(obj, other),
                 false
             )
         ) {
-            objects.push(cube)
+            objects.push(obj)
             break
         }
-        scene.remove(cube)
+        scene.remove(obj)
     }
 }
 
@@ -444,16 +464,15 @@ function randomBetween(min, max) {
     return Math.random() * (max - min) + min
 }
 
-function getRandomPosition(size) {
+function getRandomPosition(size, multiplier) {
     let r = randomBetween(7.5, 30)
     let theta = randomBetween(0, 2 * Math.PI)
 
-    let result = new Map()
-    result.set('x', r * Math.cos(theta))
-    result.set('y', size / 2 - 1.5)
-    result.set('z', r * Math.sin(theta))
-
-    return result
+    return {
+        x: r * Math.cos(theta),
+        y: multiplier * size - 1.5,
+        z: r * Math.sin(theta),
+    }
 }
 
 //////////////////////
@@ -480,15 +499,31 @@ function checkCollisionsWithClaw(object) {
 
 function checkCollisions(object1, object2) {
     'use strict'
-    let x1 = (object1.scale.x / 2) ** 2
-    let y1 = (object1.scale.y / 2) ** 2
-    let z1 = (object1.scale.z / 2) ** 2
-    let objectRadius1 = Math.sqrt(x1 + y1 + z1)
+    let objectRadius1
+    if (object1.geometry instanceof THREE.BoxGeometry) {
+        objectRadius1 =
+            Math.sqrt(
+                object1.scale.x ** 2 +
+                    object1.scale.y ** 2 +
+                    object1.scale.z ** 2
+            ) / 2
+    } else {
+        objectRadius1 =
+            Math.max([object1.scale.x, object1.scale.y, object1.scale.z]) / 2
+    }
 
-    let x2 = (object2.scale.x / 2) ** 2
-    let y2 = (object2.scale.y / 2) ** 2
-    let z2 = (object2.scale.z / 2) ** 2
-    let objectRadius2 = Math.sqrt(x2 + y2 + z2)
+    let objectRadius2
+    if (object1.geometry instanceof THREE.BoxGeometry) {
+        objectRadius2 =
+            Math.sqrt(
+                object2.scale.x ** 2 +
+                    object2.scale.y ** 2 +
+                    object2.scale.z ** 2
+            ) / 2
+    } else {
+        objectRadius2 =
+            Math.max([object2.scale.x, object2.scale.y, object2.scale.z]) / 2
+    }
 
     let d = object1
         .getWorldPosition(new THREE.Vector3())
@@ -509,7 +544,7 @@ function handleCollisions(object) {
 
     claw.add(object)
     object.position.set(0, 0, 0)
-    object.translateY(-(0.3 + object.scale.y / 2))
+    object.translateY(-(object.userData.multiplier + object.scale.y / 2))
     pickedObject = object
     objects.splice(objects.indexOf(object), 1)
 }
@@ -520,7 +555,7 @@ function handleCollisions(object) {
 function update(delta) {
     'use strict'
 
-    switch(state.animation.stage) {
+    switch (state.animation.stage) {
         case 1:
             animationClawUp(delta)
             return
@@ -590,8 +625,8 @@ function animationClawUp(delta) {
 
 function animationArmMovement(delta) {
     if (state.animation.moveArm) {
-        let armPos = armFront.getWorldPosition(new THREE.Vector3)
-        let vTheta = (armPos.z) > 0 ? -1.5 : 1.5
+        let armPos = armFront.getWorldPosition(new THREE.Vector3())
+        let vTheta = armPos.z > 0 ? -1.5 : 1.5
 
         arm.rotation.y += vTheta * delta
 
@@ -605,7 +640,6 @@ function animationArmMovement(delta) {
         let v = cartPos > -30 ? -5 : 5
 
         cart.translateX(v * delta)
-        
 
         if (cartPos > -31 && cartPos < -29) {
             state.animation.moveCart = false
@@ -633,7 +667,7 @@ function animationClawDown(delta) {
 function translateClaw(d) {
     claw.translateY(d)
     cartCable.scale.y -= d
-    cartCable.translateY(d/2)
+    cartCable.translateY(d / 2)
 }
 
 /////////////
