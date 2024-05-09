@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import * as Stats from 'three/addons/libs/stats.module.js'
 
 //////////////////////
 /* GLOBAL VARIABLES */
@@ -15,16 +14,24 @@ let objects = []
 
 let crane
 let arm
+let armFront
 let cart
 let cartCable
 let claw
 let container
 let clock = new THREE.Clock()
-let moveArm = 0
-let moveCart = 0
-let moveClaw = 0
-let moveClawArm = 0
-let animationMode = 0
+let pickedObject
+let state = {
+    moveArm: 0,
+    moveCart: 0,
+    moveClaw: 0,
+    moveClawArm: 0,
+    animation: {
+        stage: 0,
+        moveArm: false,
+        moveCart: false,
+    }
+}
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -169,7 +176,7 @@ function createArm() {
     })
     materials.push(cWeightMaterial)
 
-    let armFront = new THREE.Mesh(new THREE.BoxGeometry(37, 2, 2), armMaterial)
+    armFront = new THREE.Mesh(new THREE.BoxGeometry(37, 2, 2), armMaterial)
     armFront.translateX(-17.5)
     arm.add(armFront)
 
@@ -461,7 +468,7 @@ function checkCollisionsWithClaw(object) {
 
     let armRadius = 0.7
     clawArms.forEach((arm) => {
-        if (animationMode === 1) return
+        if (state.animation.stage != 0) return
         let d = arm
             .getWorldPosition(new THREE.Vector3())
             .distanceTo(object.getWorldPosition(new THREE.Vector3()))
@@ -497,13 +504,13 @@ function checkCollisions(object1, object2) {
 ///////////////////////
 function handleCollisions(object) {
     'use strict'
-    animationMode = 1
+    state.animation.stage = 1
     scene.remove(object)
 
     claw.add(object)
     object.position.set(0, 0, 0)
     object.translateY(-(0.3 + object.scale.y / 2))
-
+    pickedObject = object
     objects.splice(objects.indexOf(object), 1)
 }
 
@@ -512,49 +519,118 @@ function handleCollisions(object) {
 ////////////
 function update(delta) {
     'use strict'
-    arm.rotation.y += 1.5 * delta * moveArm
 
-    if (moveCart === -1 && cart.position.x < -6) {
-        cart.translateX(10 * delta)
+    switch(state.animation.stage) {
+        case 1:
+            animationClawUp(delta)
+            return
+        case 2:
+            animationArmMovement(delta)
+            return
+        case 3:
+            animationClawDown(delta)
+            return
     }
 
-    if (moveCart === 1 && cart.position.x > -35) {
-        cart.translateX(-10 * delta)
+    if (state.animation.stage == 0) {
+        arm.rotation.y += 1.5 * delta * state.moveArm
+
+        if (state.moveCart === -1 && cart.position.x < -6) {
+            cart.translateX(10 * delta)
+        }
+
+        if (state.moveCart === 1 && cart.position.x > -35) {
+            cart.translateX(-10 * delta)
+        }
+
+        if (state.moveClaw === 1 && claw.position.y < -1.5) {
+            translateClaw(10 * delta)
+        }
+
+        if (state.moveClaw === -1 && claw.position.y > -31.25) {
+            translateClaw(-10 * delta)
+        }
+
+        if (
+            state.moveClawArm === 1 &&
+            clawArmsPivot[0].rotation.z < Math.PI / 6 &&
+            clawArmsPivot[1].rotation.z > -Math.PI / 6
+        ) {
+            clawArmsPivot[0].rotation.z += 1.5 * delta
+            clawArmsPivot[1].rotation.z -= 1.5 * delta
+            clawArmsPivot[2].rotation.x += 1.5 * delta
+            clawArmsPivot[3].rotation.x -= 1.5 * delta
+        }
+
+        if (
+            state.moveClawArm === -1 &&
+            clawArmsPivot[0].rotation.z > 0 &&
+            clawArmsPivot[1].rotation.z < 0
+        ) {
+            clawArmsPivot[0].rotation.z -= 1.5 * delta
+            clawArmsPivot[1].rotation.z += 1.5 * delta
+            clawArmsPivot[2].rotation.x -= 1.5 * delta
+            clawArmsPivot[3].rotation.x += 1.5 * delta
+        }
+    }
+}
+
+function animationClawUp(delta) {
+    let clawPos = claw.position.y
+
+    translateClaw(10 * delta)
+
+    if (clawPos >= -20) {
+        state.animation.stage = 2
+        state.animation.moveArm = true
+        state.animation.moveCart = true
+    }
+}
+
+function animationArmMovement(delta) {
+    if (state.animation.moveArm) {
+        let armPos = armFront.getWorldPosition(new THREE.Vector3)
+        let vTheta = (armPos.z) > 0 ? -1.5 : 1.5
+
+        arm.rotation.y += vTheta * delta
+
+        if (armPos.z < 1.5 && armPos.z > -1.5 && armPos.x < 0) {
+            state.animation.moveArm = false
+        }
     }
 
-    if (moveClaw === 1 && claw.position.y < -1.5) {
-        claw.translateY(10 * delta)
-        cartCable.scale.y -= 10 * delta
-        cartCable.translateY(5 * delta)
+    if (state.animation.moveCart) {
+        let cartPos = cart.position.x
+        let v = cartPos > -30 ? -5 : 5
+
+        cart.translateX(v * delta)
+        
+
+        if (cartPos > -31 && cartPos < -29) {
+            state.animation.moveCart = false
+        }
     }
 
-    if (moveClaw === -1 && claw.position.y > -31.25) {
-        claw.translateY(-10 * delta)
-        cartCable.scale.y += 10 * delta
-        cartCable.translateY(-5 * delta)
+    if (!state.animation.moveArm && !state.animation.moveCart) {
+        state.animation.stage = 3
     }
+}
 
-    if (
-        moveClawArm === 1 &&
-        clawArmsPivot[0].rotation.z < Math.PI / 6 &&
-        clawArmsPivot[1].rotation.z > -Math.PI / 6
-    ) {
-        clawArmsPivot[0].rotation.z += 1.5 * delta
-        clawArmsPivot[1].rotation.z -= 1.5 * delta
-        clawArmsPivot[2].rotation.x += 1.5 * delta
-        clawArmsPivot[3].rotation.x -= 1.5 * delta
-    }
+function animationClawDown(delta) {
+    let clawPos = claw.position.y
 
-    if (
-        moveClawArm === -1 &&
-        clawArmsPivot[0].rotation.z > 0 &&
-        clawArmsPivot[1].rotation.z < 0
-    ) {
-        clawArmsPivot[0].rotation.z -= 1.5 * delta
-        clawArmsPivot[1].rotation.z += 1.5 * delta
-        clawArmsPivot[2].rotation.x -= 1.5 * delta
-        clawArmsPivot[3].rotation.x += 1.5 * delta
+    translateClaw(-10 * delta)
+
+    if (clawPos <= -25.5) {
+        state.animation.stage = 0
+        claw.remove(pickedObject)
     }
+}
+
+function translateClaw(d) {
+    claw.translateY(d)
+    cartCable.scale.y -= d
+    cartCable.translateY(d/2)
 }
 
 /////////////
@@ -592,7 +668,7 @@ function animate() {
     'use strict'
     update(clock.getDelta())
     objects.forEach((object) => {
-        if (animationMode === 1) return
+        if (state.animation.stage != 0) return
         checkCollisionsWithClaw(object)
     })
     render()
@@ -655,35 +731,35 @@ function onKeyDown(e) {
             break
         case 65: // A
             highlightControl('keyA')
-            moveArm = 1
+            state.moveArm = 1
             break
         case 68: // D
             highlightControl('keyD')
-            moveArm = -1
+            state.moveArm = -1
             break
         case 87: // W
             highlightControl('keyW')
-            moveCart = 1
+            state.moveCart = 1
             break
         case 83: // S
             highlightControl('keyS')
-            moveCart = -1
+            state.moveCart = -1
             break
         case 38: // UP
             highlightControl('keyArrowUp')
-            moveClaw = 1
+            state.moveClaw = 1
             break
         case 40: // DOWN
             highlightControl('keyArrowDown')
-            moveClaw = -1
+            state.moveClaw = -1
             break
         case 81: // Q
             highlightControl('keyQ')
-            moveClawArm = 1
+            state.moveClawArm = 1
             break
         case 69: // E
             highlightControl('keyE')
-            moveClawArm = -1
+            state.moveClawArm = -1
             break
     }
 }
@@ -715,25 +791,25 @@ function onKeyUp(e) {
         case 68: // D
             normalControl('keyA')
             normalControl('keyD')
-            moveArm = 0
+            state.moveArm = 0
             break
         case 87: // W
         case 83: // S
             normalControl('keyW')
             normalControl('keyS')
-            moveCart = 0
+            state.moveCart = 0
             break
         case 38: // UP
         case 40: // DOWN
             normalControl('keyArrowUp')
             normalControl('keyArrowDown')
-            moveClaw = 0
+            state.moveClaw = 0
             break
         case 81: // Q
         case 69: // E
             normalControl('keyQ')
             normalControl('keyE')
-            moveClawArm = 0
+            state.moveClawArm = 0
             break
     }
 }
