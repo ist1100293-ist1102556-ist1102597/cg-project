@@ -915,7 +915,7 @@ function normalControlCameras() {
     }
 }
 
-function inAnimation(animated){
+function inAnimation(animated) {
     if (animated) {
         document.getElementById('in-animation').innerHTML = 'Em animação'
     } else {
