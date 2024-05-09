@@ -566,6 +566,9 @@ function update(delta) {
         case 3:
             animationClawDown(delta)
             return
+        case 4:
+            animationClawOpen(delta)
+            return
     }
 
     if (state.animation.stage == 0) {
@@ -658,6 +661,17 @@ function animationClawDown(delta) {
     translateClaw(-10 * delta)
 
     if (clawPos <= -25.5) {
+        state.animation.stage = 4
+    }
+}
+
+function animationClawOpen(delta) {
+    if (clawArmsPivot[0].rotation.z > 0 && clawArmsPivot[1].rotation.z < 0) {
+        clawArmsPivot[0].rotation.z -= 1.5 * delta
+        clawArmsPivot[1].rotation.z += 1.5 * delta
+        clawArmsPivot[2].rotation.x -= 1.5 * delta
+        clawArmsPivot[3].rotation.x += 1.5 * delta
+    } else {
         state.animation.stage = 0
         claw.remove(pickedObject)
     }
