@@ -22,6 +22,14 @@ h4 {
     width: 60px;
 }
 
+#in-animation {
+    width: 95px;
+    font-weight: bold;
+    display: inline !important;
+    font-size: 20;
+    padding: 0px;
+}
+
 .sub-container {
     display: flex;
     align-items: center;

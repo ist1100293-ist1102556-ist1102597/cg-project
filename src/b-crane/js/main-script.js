@@ -576,6 +576,7 @@ function update(delta) {
 }
 
 function animationClawUp(delta) {
+    inAnimation(true)
     let clawPos = claw.position.y
 
     translateClaw(10 * delta)
@@ -625,6 +626,8 @@ function animationClawDown(delta) {
         state.animation.stage = 0
         claw.remove(pickedObject)
     }
+
+    inAnimation(false)
 }
 
 function translateClaw(d) {
@@ -820,6 +823,9 @@ function createHUD() {
     div.innerHTML = `
     <div class="container">
         <div class="sub-container">
+            <h3 id="in-animation" class="sub-container-background"></h4>
+        </div>
+        <div class="sub-container">
             <h4>Braço</h4>
             <div id="keyA">[A]</div>
             <div id="keyD">[D]</div>
@@ -872,6 +878,14 @@ function normalControlCameras() {
         document
             .getElementById('camera' + i)
             .classList.remove('sub-container-background')
+    }
+}
+
+function inAnimation(animated){
+    if (animated) {
+        document.getElementById('in-animation').innerHTML = 'Em animação'
+    } else {
+        document.getElementById('in-animation').innerHTML = ''
     }
 }
 
