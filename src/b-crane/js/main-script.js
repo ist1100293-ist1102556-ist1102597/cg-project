@@ -82,7 +82,7 @@ function createCameras() {
     cameras[1].position.set(0, 20, 50)
     cameras[1].lookAt(0, 20, 0)
 
-    let camera2zoom = cameraScale * 0.9
+    let camera2zoom = cameraScale * 0.85
     cameras[2] = new THREE.OrthographicCamera(
         window.innerWidth / -camera2zoom,
         window.innerWidth / camera2zoom,
