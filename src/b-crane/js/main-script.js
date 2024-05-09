@@ -127,6 +127,7 @@ function createCrane() {
 
     crane.add(createTower())
     crane.add(createArm())
+    crane.translateY(1.5) // Above floor level
 
     scene.add(crane)
 }
@@ -392,7 +393,7 @@ function createContainer() {
     )
     container.scale.set(5, 5, 10)
 
-    container.position.set(-30, 5 / 2 - 1.5, 0)
+    container.position.set(-30, 5 / 2, 0)
     objects.push(container)
     scene.add(container)
 }
@@ -470,7 +471,7 @@ function getRandomPosition(size, multiplier) {
 
     return {
         x: r * Math.cos(theta),
-        y: multiplier * size - 1.5,
+        y: multiplier * size,
         z: r * Math.sin(theta),
     }
 }
@@ -574,7 +575,7 @@ function update(delta) {
             cart.translateX(10 * delta)
         }
 
-        if (state.moveCart === 1 && cart.position.x > -35) {
+        if (state.moveCart === 1 && cart.position.x > -34.5) {
             cart.translateX(-10 * delta)
         }
 
@@ -582,7 +583,7 @@ function update(delta) {
             translateClaw(10 * delta)
         }
 
-        if (state.moveClaw === -1 && claw.position.y > -31.25) {
+        if (state.moveClaw === -1 && claw.position.y > -30.5) {
             translateClaw(-10 * delta)
         }
 
