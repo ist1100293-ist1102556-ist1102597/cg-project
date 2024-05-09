@@ -872,7 +872,7 @@ function createHUD() {
     div.innerHTML = `
     <div class="container">
         <div class="sub-container">
-            <h3 id="in-animation" class="sub-container-background"></h4>
+            <h3 id="in-animation"></h4>
         </div>
         <div class="sub-container">
             <h4>Braço</h4>
