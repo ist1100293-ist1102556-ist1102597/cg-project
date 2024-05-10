@@ -25,6 +25,7 @@ function createScene() {
     scene = new THREE.Scene()
     scene.add(new THREE.AxesHelper(10))
     createTube()
+    createRings()
 }
 
 //////////////////////
@@ -74,13 +75,13 @@ class verticalSegment extends THREE.Curve {
 
 function createTube() {
     'use strict'
-    let radius = 10
+    let radius = 7
     let path = new verticalSegment( 1 );
     let geometry = new THREE.TubeGeometry(path,64,radius,20,true)
     let material = new THREE.MeshBasicMaterial({ color: 0xffff00 })
     tube = new THREE.Mesh(geometry, material)
 
-    let geometryCircle = new THREE.CircleGeometry( 10, 32 )
+    let geometryCircle = new THREE.CircleGeometry( 7, 32 )
     let circleTop = new THREE.Mesh( geometryCircle, material )
     circleTop.rotateX(-Math.PI/2)
     circleTop.position.y = 20
@@ -94,6 +95,61 @@ function createTube() {
     tube.add(circleBottom)
 
     scene.add(tube)
+}
+
+function createRings() {
+    'use strict'
+
+
+    let ring1Shape = createRingShape(7, 13)
+    let ring2Shape = createRingShape(13, 19)
+    let ring3Shape = createRingShape(19, 25)
+
+    let extrudeSettings = {
+        depth: 4,
+    };
+
+    let geometry1 = new THREE.ExtrudeGeometry(ring1Shape, extrudeSettings)
+    let material1 = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    let ring1 = new THREE.Mesh(geometry1, material1)
+    ring1.rotateX(-Math.PI / 2)
+    ring1.position.y = 8
+    rings[0] = new THREE.Object3D()
+    rings[0].add(ring1)
+
+    let geometry2 = new THREE.ExtrudeGeometry(ring2Shape, extrudeSettings)
+    let material2 = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+    let ring2 = new THREE.Mesh(geometry2, material2)
+    ring2.rotateX(-Math.PI / 2)
+    ring2.position.y = 4
+    rings[1] = new THREE.Object3D()
+    rings[1].add(ring2)
+
+    let geometry3 = new THREE.ExtrudeGeometry(ring3Shape, extrudeSettings)
+    let material3 = new THREE.MeshBasicMaterial({ color: 0x0000ff })
+    let ring3 = new THREE.Mesh(geometry3, material3)
+    ring3.rotateX(-Math.PI / 2)
+    ring3.position.y = 0
+    rings[2] = new THREE.Object3D()
+    rings[2].add(ring3)
+
+    rings.forEach(ring => {
+        scene.add(ring)
+    })
+}
+
+function createRingShape(innerRadius, outerRadius) {
+    'use strict'
+    let shape = new THREE.Shape()
+    shape.moveTo(0, 0)
+    shape.absarc(0, 0, outerRadius, 0, Math.PI * 2, false)
+
+    let holePath = new THREE.Path()
+    holePath.moveTo(0, 0)
+    holePath.absarc(0, 0, innerRadius, 0, Math.PI * 2, false)
+
+    shape.holes.push(holePath)
+    return shape
 }
 
 ////////////
