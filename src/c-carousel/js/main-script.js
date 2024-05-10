@@ -15,7 +15,7 @@ let currentCamera
 let tube
 let morbiusBand
 let rings = []
-let objects = []
+let objects = [[],[],[]]
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -26,6 +26,7 @@ function createScene() {
     scene.add(new THREE.AxesHelper(10))
     createTube()
     createRings()
+    createObjects()
 }
 
 //////////////////////
@@ -39,7 +40,7 @@ function createCameras() {
         1,
         1000
     )
-    cameras[0].position.set(50, 55, 50)
+    cameras[0].position.set(0, 55, 0)
     cameras[0].lookAt(0, 30, 0)
 
     currentCamera = cameras[0]
@@ -100,7 +101,6 @@ function createTube() {
 function createRings() {
     'use strict'
 
-
     let ring1Shape = createRingShape(7, 13)
     let ring2Shape = createRingShape(13, 19)
     let ring3Shape = createRingShape(19, 25)
@@ -150,6 +150,23 @@ function createRingShape(innerRadius, outerRadius) {
 
     shape.holes.push(holePath)
     return shape
+}
+
+function createObjects() {
+    'use strict'
+    let heights = [14,10,6]
+    let distances = [10,16,22]
+    for(let i = 0; i < 3; i++) {
+        for (let j = 0; j < 8; j++) {
+            let geometry = new THREE.BoxGeometry(3, 4, 3)
+            let material = new THREE.MeshBasicMaterial({ color: 0xfffff0 })
+            let cube = new THREE.Mesh(geometry, material)
+            let r = distances[i]
+            cube.position.set(r * Math.sin(j * Math.PI / 4), heights[i], r * Math.cos(j * Math.PI / 4))
+            objects[i].push(cube)
+            rings[i].add(cube)
+        }
+    }
 }
 
 ////////////
