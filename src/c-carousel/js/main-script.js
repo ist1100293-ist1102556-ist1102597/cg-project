@@ -8,38 +8,48 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js'
 /* GLOBAL VARIABLES */
 //////////////////////
 
+let renderer
+let scene
+let cameras = []
+let currentCamera
+
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
 function createScene() {
     'use strict'
+    scene = new THREE.Scene()
+    scene.add(new THREE.AxesHelper(10))
 }
 
 //////////////////////
 /* CREATE CAMERA(S) */
 //////////////////////
+function createCameras() {
+    'use strict'
+    cameras[0] = new THREE.PerspectiveCamera(
+        70,
+        window.innerWidth / window.innerHeight,
+        1,
+        1000
+    )
+    cameras[0].position.set(50, 55, 50)
+    cameras[0].lookAt(0, 18, 0)
+
+    currentCamera = cameras[0]
+
+}
 
 /////////////////////
 /* CREATE LIGHT(S) */
 /////////////////////
+function createLights() {
+    'use strict'
+}
 
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
-
-//////////////////////
-/* CHECK COLLISIONS */
-//////////////////////
-function checkCollisions() {
-    'use strict'
-}
-
-///////////////////////
-/* HANDLE COLLISIONS */
-///////////////////////
-function handleCollisions() {
-    'use strict'
-}
 
 ////////////
 /* UPDATE */
@@ -53,6 +63,7 @@ function update() {
 /////////////
 function render() {
     'use strict'
+    renderer.render(scene, currentCamera)
 }
 
 ////////////////////////////////
@@ -60,13 +71,20 @@ function render() {
 ////////////////////////////////
 function init() {
     'use strict'
-}
+    renderer = new THREE.WebGLRenderer({
+        antialias: true,
+    })
+    renderer.setSize(window.innerWidth, window.innerHeight)
+    document.body.appendChild(renderer.domElement)
+    document.body.appendChild(VRButton.createButton(renderer))
+    renderer.xr.enabled = true
 
-/////////////////////
-/* ANIMATION CYCLE */
-/////////////////////
-function animate() {
-    'use strict'
+    window.addEventListener('resize', onResize)
+    createScene()
+    createCameras()
+    createLights()
+
+    render()
 }
 
 ////////////////////////////
@@ -74,6 +92,8 @@ function animate() {
 ////////////////////////////
 function onResize() {
     'use strict'
+
+    renderer.setSize(window.innerWidth, window.innerHeight)
 }
 
 ///////////////////////
@@ -91,4 +111,12 @@ function onKeyUp(e) {
 }
 
 init()
-animate()
+
+/////////////////////
+/* ANIMATION CYCLE */
+/////////////////////
+renderer.setAnimationLoop(function () {
+    'use strict'
+    update()
+    render()
+})
