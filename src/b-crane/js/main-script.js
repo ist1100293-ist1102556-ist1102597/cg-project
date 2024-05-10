@@ -40,8 +40,6 @@ function createScene() {
     'use strict'
     scene = new THREE.Scene()
 
-    scene.add(new THREE.AxesHelper(10))
-
     scene.background = new THREE.Color(0xa1ffff)
     createCrane()
     createContainer()
