@@ -40,8 +40,8 @@ function createCameras() {
         1,
         1000
     )
-    cameras[0].position.set(0, 55, 0)
-    cameras[0].lookAt(0, 30, 0)
+    cameras[0].position.set(40, 45, 40)
+    cameras[0].lookAt(0, 15, 0)
 
     currentCamera = cameras[0]
 
@@ -155,16 +155,16 @@ function createRingShape(innerRadius, outerRadius) {
 function createObjects() {
     'use strict'
     let heights = [14,10,6]
-    let distances = [10,16,22]
+    let distances = [10,15.5,21.5]
     for(let i = 0; i < 3; i++) {
         for (let j = 0; j < 8; j++) {
             let geometry = new THREE.BoxGeometry(3, 4, 3)
             let material = new THREE.MeshBasicMaterial({ color: 0xfffff0 })
-            let cube = new THREE.Mesh(geometry, material)
+            let object = new THREE.Mesh(geometry, material)
             let r = distances[i]
-            cube.position.set(r * Math.sin(j * Math.PI / 4), heights[i], r * Math.cos(j * Math.PI / 4))
-            objects[i].push(cube)
-            rings[i].add(cube)
+            object.position.set(r * Math.sin(j * Math.PI / 4), heights[i], r * Math.cos(j * Math.PI / 4))
+            objects[i].push(object)
+            rings[i].add(object)
         }
     }
 }
@@ -174,6 +174,15 @@ function createObjects() {
 ////////////
 function update() {
     'use strict'
+    objects.forEach((ring, i) => {
+        ring.forEach((object) => {
+            object.rotation.y += 0.01
+        })
+    })
+    tube.rotation.y -= 0.01
+    rings[0].rotation.y += 0.01
+    rings[1].rotation.y -= 0.01
+    rings[2].rotation.y += 0.01
 }
 
 /////////////
