@@ -18,8 +18,10 @@ let tube
 let morbiusBand
 let rings = []
 let objects = [[],[],[]]
+let objectsLights = []
 let directionalLight
 let directionlLightOn = true
+let spotLightsOn = true
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -63,6 +65,21 @@ function createLights() {
     directionalLight.target.position.set(0, 0, 0)
     scene.add(directionalLight.target)
     scene.add(directionalLight)
+
+    let heights = [12,8,4]
+    let distances = [10,15.5,21.5]
+    for(let i = 0; i < 3; i++) {
+        for (let j = 0; j < 8; j++) {
+            let r = distances[i]
+            let spotLight = new THREE.SpotLight( 0xffffff );
+            spotLight.position.set(r * Math.sin(j * Math.PI / 4), heights[i], r * Math.cos(j * Math.PI / 4))
+            spotLight.target.position.set(0,100,0)
+            spotLight.intensity = 50
+            scene.add(spotLight.target)
+            scene.add(spotLight)
+            objectsLights.push(spotLight)
+        }
+    }
 }
 
 ////////////////////////
@@ -200,6 +217,16 @@ function update() {
     } else {
         directionalLight.intensity = 0.7
     }
+
+    if (!spotLightsOn) {
+        objectsLights.forEach(light => {
+            light.intensity = 0
+        })
+    } else {
+        objectsLights.forEach(light => {
+            light.intensity = 50
+        })
+    }
 }
 
 /////////////
@@ -248,9 +275,11 @@ function onResize() {
 function onKeyDown(e) {
     'use strict'
     switch(e.keyCode) {
-        case 68: // (D)d
+        case 68: // D(d)
             directionlLightOn = !directionlLightOn
-            console.log(directionalLightOn)
+            break
+        case 83 : // S(s)
+            spotLightsOn = !spotLightsOn
             break
     }
 }
