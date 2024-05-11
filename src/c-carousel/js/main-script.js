@@ -54,8 +54,13 @@ function createCameras() {
 /////////////////////
 function createLights() {
     'use strict'
-    let ambientLight = new THREE.AmbientLight(0xFFD580, 0.7)
+    let ambientLight = new THREE.AmbientLight(0xFFD580, 0.3)
     scene.add(ambientLight)
+    let directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.7)
+    directionalLight.position.set(100, 200, 100)
+    directionalLight.target.position.set(0, 0, 0)
+    scene.add(directionalLight.target)
+    scene.add(directionalLight)
 }
 
 ////////////////////////
