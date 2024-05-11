@@ -54,6 +54,8 @@ function createCameras() {
 /////////////////////
 function createLights() {
     'use strict'
+    let ambientLight = new THREE.AmbientLight(0xFFD580, 0.7)
+    scene.add(ambientLight)
 }
 
 ////////////////////////
@@ -81,7 +83,7 @@ function createTube() {
     let radius = 7
     let path = new verticalSegment( 1 );
     let geometry = new THREE.TubeGeometry(path,64,radius,20,true)
-    let material = new THREE.MeshBasicMaterial({ color: 0xffff00 })
+    let material = new THREE.MeshStandardMaterial({ color: 0xffff00 })
     tube = new THREE.Mesh(geometry, material)
 
     let geometryCircle = new THREE.CircleGeometry( 7, 32 )
@@ -112,7 +114,7 @@ function createRings() {
     };
 
     let geometry1 = new THREE.ExtrudeGeometry(ring1Shape, extrudeSettings)
-    let material1 = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    let material1 = new THREE.MeshStandardMaterial({ color: 0xff0000 })
     let ring1 = new THREE.Mesh(geometry1, material1)
     ring1.rotateX(-Math.PI / 2)
     ring1.position.y = 8
@@ -120,7 +122,7 @@ function createRings() {
     rings[0].add(ring1)
 
     let geometry2 = new THREE.ExtrudeGeometry(ring2Shape, extrudeSettings)
-    let material2 = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+    let material2 = new THREE.MeshStandardMaterial({ color: 0x00ff00 })
     let ring2 = new THREE.Mesh(geometry2, material2)
     ring2.rotateX(-Math.PI / 2)
     ring2.position.y = 4
@@ -128,7 +130,7 @@ function createRings() {
     rings[1].add(ring2)
 
     let geometry3 = new THREE.ExtrudeGeometry(ring3Shape, extrudeSettings)
-    let material3 = new THREE.MeshBasicMaterial({ color: 0x0000ff })
+    let material3 = new THREE.MeshStandardMaterial({ color: 0x0000ff })
     let ring3 = new THREE.Mesh(geometry3, material3)
     ring3.rotateX(-Math.PI / 2)
     ring3.position.y = 0
@@ -161,7 +163,7 @@ function createObjects() {
     for(let i = 0; i < 3; i++) {
         for (let j = 0; j < 8; j++) {
             let geometry = new THREE.BoxGeometry(3, 4, 3)
-            let material = new THREE.MeshBasicMaterial({ color: 0xfffff0 })
+            let material = new THREE.MeshStandardMaterial({ color: 0xfffff0 })
             let object = new THREE.Mesh(geometry, material)
             let r = distances[i]
             object.position.set(r * Math.sin(j * Math.PI / 4), heights[i], r * Math.cos(j * Math.PI / 4))
