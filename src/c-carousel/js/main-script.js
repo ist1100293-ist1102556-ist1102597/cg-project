@@ -9,6 +9,8 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js'
 //////////////////////
 
 let renderer
+let clock = new THREE.Clock()
+let delta
 let scene
 let cameras = []
 let currentCamera
@@ -176,13 +178,13 @@ function update() {
     'use strict'
     objects.forEach((ring, i) => {
         ring.forEach((object) => {
-            object.rotation.y += 0.01
+            object.rotation.y += 1 * delta 
         })
     })
-    tube.rotation.y -= 0.01
-    rings[0].rotation.y += 0.01
-    rings[1].rotation.y -= 0.01
-    rings[2].rotation.y += 0.01
+    tube.rotation.y -= 0.5 * delta
+    rings[0].rotation.y += 0.5 * delta
+    rings[1].rotation.y -= 0.5 * delta
+    rings[2].rotation.y += 0.5 * delta
 }
 
 /////////////
@@ -244,6 +246,9 @@ init()
 /////////////////////
 renderer.setAnimationLoop(function () {
     'use strict'
+    delta = clock.getDelta()
+    console.log(delta)
     update()
     render()
+    clock.getDelta()
 })
