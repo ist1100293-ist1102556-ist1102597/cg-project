@@ -18,6 +18,8 @@ let tube
 let morbiusBand
 let rings = []
 let objects = [[],[],[]]
+let directionalLight
+let directionlLightOn = true
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -56,7 +58,7 @@ function createLights() {
     'use strict'
     let ambientLight = new THREE.AmbientLight(0xFFD580, 0.3)
     scene.add(ambientLight)
-    let directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.7)
+    directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.7)
     directionalLight.position.set(100, 200, 100)
     directionalLight.target.position.set(0, 0, 0)
     scene.add(directionalLight.target)
@@ -192,6 +194,12 @@ function update() {
     rings[0].rotation.y += 0.5 * delta
     rings[1].rotation.y -= 0.5 * delta
     rings[2].rotation.y += 0.5 * delta
+
+    if (!directionlLightOn) {
+        directionalLight.intensity = 0
+    } else {
+        directionalLight.intensity = 0.7
+    }
 }
 
 /////////////
@@ -216,6 +224,8 @@ function init() {
     renderer.xr.enabled = true
 
     window.addEventListener('resize', onResize)
+    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keyup', onKeyUp)
     createScene()
     createCameras()
     createLights()
@@ -237,6 +247,12 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict'
+    switch(e.keyCode) {
+        case 68: // (D)d
+            directionlLightOn = !directionlLightOn
+            console.log(directionalLightOn)
+            break
+    }
 }
 
 ///////////////////////
@@ -254,7 +270,6 @@ init()
 renderer.setAnimationLoop(function () {
     'use strict'
     delta = clock.getDelta()
-    console.log(delta)
     update()
     render()
     clock.getDelta()
