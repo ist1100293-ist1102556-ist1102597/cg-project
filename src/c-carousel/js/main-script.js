@@ -75,8 +75,8 @@ function createLights() {
             spotLight.position.set(r * Math.sin(j * Math.PI / 4), heights[i], r * Math.cos(j * Math.PI / 4))
             spotLight.target.position.set(0,100,0)
             spotLight.intensity = 50
-            scene.add(spotLight.target)
-            scene.add(spotLight)
+            objects[i][j].add(spotLight.target)
+            rings[i].add(spotLight)
             objectsLights.push(spotLight)
         }
     }
