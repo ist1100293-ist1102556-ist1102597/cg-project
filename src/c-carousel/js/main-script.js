@@ -110,23 +110,11 @@ class verticalSegment extends THREE.Curve {
 function createTube() {
     'use strict'
     let radius = 7
-    let path = new verticalSegment( 1 );
-    let geometry = new THREE.TubeGeometry(path,64,radius,20,true)
+    let geometry = new THREE.CylinderGeometry(radius, radius, 20, 32, 1)
     let material = new THREE.MeshStandardMaterial({ color: 0xffff00 })
     tube = new THREE.Mesh(geometry, material)
 
-    let geometryCircle = new THREE.CircleGeometry( 7, 32 )
-    let circleTop = new THREE.Mesh( geometryCircle, material )
-    circleTop.rotateX(-Math.PI/2)
-    circleTop.position.y = 20
-
-    tube.add(circleTop)
-
-    let circleBottom = new THREE.Mesh( geometryCircle, material )
-    circleBottom.rotateX(-Math.PI/2)
-    circleBottom.position.y = 0
-
-    tube.add(circleBottom)
+    tube.translateY(10)
 
     scene.add(tube)
 }
