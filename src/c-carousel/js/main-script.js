@@ -22,6 +22,11 @@ let objectsLights = []
 let directionalLight
 let directionlLightOn = true
 let spotLightsOn = true
+let state = {
+    moveOuterRing: 1,
+    moveMiddleRing: 1,
+    moveInnerRing: 1,
+}
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -200,7 +205,7 @@ function createObjects() {
 ////////////
 /* UPDATE */
 ////////////
-function update() {
+function update(delta) {
     'use strict'
     objects.forEach((ring, i) => {
         ring.forEach((object) => {
@@ -226,6 +231,75 @@ function update() {
         objectsLights.forEach(light => {
             light.intensity = 50
         })
+    }
+
+    moveOuterRing(delta, 5)
+    moveMiddleRing(delta, 5)
+    moveInnerRing(delta, 5)
+
+    console.log(rings[0].position.y, rings[1].position.y, rings[2].position.y)
+}
+
+function moveOuterRing(delta,speed){
+    
+    // Invert movement
+    if(rings[2].position.y <= 0){
+        state.moveOuterRing = 1
+    }
+    
+    if(rings[2].position.y >= 16){
+        state.moveOuterRing = -1
+    }
+
+    // Apply movement
+    if (state.moveOuterRing === -1 && rings[2].position.y > 0) {
+        rings[2].translateY(-speed * delta)
+    }
+    
+    if (state.moveOuterRing === 1 && rings[2].position.y < 16) {
+        rings[2].translateY(speed * delta)
+    }
+}
+
+function moveMiddleRing(delta,speed){
+    
+    // Invert Movement
+    if(rings[1].position.y <= -4){
+        state.moveMiddleRing = 1
+    }
+    
+    if(rings[1].position.y >= 12){
+        state.moveMiddleRing = -1
+    }
+
+    // Apply movement
+    if (state.moveMiddleRing === -1 && rings[1].position.y > -4) {
+        rings[1].translateY(-speed * delta)
+    }
+    
+    if (state.moveMiddleRing === 1 && rings[1].position.y < 12) {
+        rings[1].translateY(speed * delta)
+    }
+}
+
+function moveInnerRing(delta,speed){
+    
+    // Invert movement
+    if(rings[0].position.y <= -8){
+        state.moveInnerRing = 1
+    }
+    
+    if(rings[0].position.y >= 8){
+        state.moveInnerRing = -1
+    }
+
+    // Apply movement
+    if (state.moveInnerRing === -1 && rings[0].position.y > -8) {
+        rings[0].translateY(-speed * delta)
+    }
+    
+    if (state.moveInnerRing === 1 && rings[0].position.y < 8) {
+        rings[0].translateY(speed * delta)
     }
 }
 
@@ -281,6 +355,27 @@ function onKeyDown(e) {
         case 83 : // S(s)
             spotLightsOn = !spotLightsOn
             break
+        case 49: // 1
+            if(state.moveInnerRing == 0){
+                state.moveInnerRing = 1
+            } else {
+                state.moveInnerRing = 0
+            };
+            break
+        case 50: // 2
+            if(state.moveMiddleRing == 0){
+                state.moveMiddleRing = 1
+            } else {
+                state.moveMiddleRing = 0
+            }
+            break
+        case 51: // 3
+            if(state.moveOuterRing == 0){
+                state.moveOuterRing = 1
+            } else {
+                state.moveOuterRing = 0
+            }
+            break
     }
 }
 
@@ -298,8 +393,7 @@ init()
 /////////////////////
 renderer.setAnimationLoop(function () {
     'use strict'
-    delta = clock.getDelta()
-    update()
+    update(clock.getDelta())
     render()
     clock.getDelta()
 })
