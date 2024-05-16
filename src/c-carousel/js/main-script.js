@@ -23,9 +23,12 @@ let directionalLight
 let directionlLightOn = true
 let spotLightsOn = true
 let state = {
-    moveOuterRing: 1,
-    moveMiddleRing: 1,
-    moveInnerRing: 1,
+    moveOuterRing: true,
+    tOuter: 0,
+    moveMiddleRing: true,
+    tMiddle: 0.065,
+    moveInnerRing: true,
+    tInner: 0.146
 }
 
 /////////////////////
@@ -38,6 +41,7 @@ function createScene() {
     createTube()
     createRings()
     createObjects()
+    translateRings()
 }
 
 //////////////////////
@@ -51,8 +55,8 @@ function createCameras() {
         1,
         1000
     )
-    cameras[0].position.set(40, 45, 40)
-    cameras[0].lookAt(0, 15, 0)
+    cameras[0].position.set(20, 25, 20)
+    cameras[0].lookAt(0, 0, 0)
 
     currentCamera = cameras[0]
 
@@ -71,16 +75,18 @@ function createLights() {
     scene.add(directionalLight.target)
     scene.add(directionalLight)
 
-    let heights = [12,8,4]
-    let distances = [10,15.5,21.5]
+    let distances = [4, 8, 12]
     for(let i = 0; i < 3; i++) {
         for (let j = 0; j < 8; j++) {
             let r = distances[i]
             let spotLight = new THREE.SpotLight( 0xffffff );
-            spotLight.position.set(r * Math.sin(j * Math.PI / 4), heights[i], r * Math.cos(j * Math.PI / 4))
-            spotLight.target.position.set(0,100,0)
-            spotLight.intensity = 50
-            objects[i][j].add(spotLight.target)
+            let x = r * Math.sin(j * Math.PI / 4)
+            let z = r * Math.cos(j * Math.PI / 4)
+            spotLight.position.set(x, 2, z)
+            spotLight.target.position.set(x, 100, z)
+            spotLight.angle = Math.PI / 3
+            scene.add(spotLight.target)
+            spotLight.intensity = 1
             rings[i].add(spotLight)
             objectsLights.push(spotLight)
         }
@@ -109,12 +115,10 @@ class verticalSegment extends THREE.Curve {
 
 function createTube() {
     'use strict'
-    let radius = 7
-    let geometry = new THREE.CylinderGeometry(radius, radius, 20, 32, 1)
+    let radius = 2
+    let geometry = new THREE.CylinderGeometry(radius, radius, 24, 32, 1)
     let material = new THREE.MeshStandardMaterial({ color: 0xffff00 })
     tube = new THREE.Mesh(geometry, material)
-
-    tube.translateY(10)
 
     scene.add(tube)
 }
@@ -122,9 +126,9 @@ function createTube() {
 function createRings() {
     'use strict'
 
-    let ring1Shape = createRingShape(7, 13)
-    let ring2Shape = createRingShape(13, 19)
-    let ring3Shape = createRingShape(19, 25)
+    let ring1Shape = createRingShape(2, 6)
+    let ring2Shape = createRingShape(6, 10)
+    let ring3Shape = createRingShape(10, 14)
 
     let extrudeSettings = {
         depth: 4,
@@ -134,7 +138,6 @@ function createRings() {
     let material1 = new THREE.MeshStandardMaterial({ color: 0xff0000 })
     let ring1 = new THREE.Mesh(geometry1, material1)
     ring1.rotateX(-Math.PI / 2)
-    ring1.position.y = 8
     rings[0] = new THREE.Object3D()
     rings[0].add(ring1)
 
@@ -142,7 +145,6 @@ function createRings() {
     let material2 = new THREE.MeshStandardMaterial({ color: 0x00ff00 })
     let ring2 = new THREE.Mesh(geometry2, material2)
     ring2.rotateX(-Math.PI / 2)
-    ring2.position.y = 4
     rings[1] = new THREE.Object3D()
     rings[1].add(ring2)
 
@@ -150,7 +152,6 @@ function createRings() {
     let material3 = new THREE.MeshStandardMaterial({ color: 0x0000ff })
     let ring3 = new THREE.Mesh(geometry3, material3)
     ring3.rotateX(-Math.PI / 2)
-    ring3.position.y = 0
     rings[2] = new THREE.Object3D()
     rings[2].add(ring3)
 
@@ -175,19 +176,25 @@ function createRingShape(innerRadius, outerRadius) {
 
 function createObjects() {
     'use strict'
-    let heights = [14,10,6]
-    let distances = [10,15.5,21.5]
+    let distances = [4, 8, 12]
     for(let i = 0; i < 3; i++) {
         for (let j = 0; j < 8; j++) {
-            let geometry = new THREE.BoxGeometry(3, 4, 3)
+            let geometry = new THREE.BoxGeometry(2, 4, 2)
             let material = new THREE.MeshStandardMaterial({ color: 0xfffff0 })
             let object = new THREE.Mesh(geometry, material)
             let r = distances[i]
-            object.position.set(r * Math.sin(j * Math.PI / 4), heights[i], r * Math.cos(j * Math.PI / 4))
+            object.position.set(r * Math.sin(j * Math.PI / 4), 6, r * Math.cos(j * Math.PI / 4))
             objects[i].push(object)
             rings[i].add(object)
         }
     }
+}
+
+function translateRings() {
+    'use strict'
+    rings[0].translateY(8)
+    rings[1].translateY(4)
+    rings[2].translateY(0)
 }
 
 ////////////
@@ -221,9 +228,24 @@ function update(delta) {
         })
     }
 
-    moveOuterRing(delta, 5)
-    moveMiddleRing(delta, 5)
-    moveInnerRing(delta, 5)
+    if (state.moveOuterRing) {
+        state.tOuter += delta*0.1
+        rings[2].position.y = 10 * Math.sin(state.tOuter * 2*Math.PI) - 2
+    }
+
+    if (state.moveMiddleRing) {
+        state.tMiddle += delta*0.1
+        rings[1].position.y = 10 * Math.sin(state.tMiddle * 2*Math.PI) - 2
+    }
+
+    if (state.moveInnerRing) {
+        state.tInner += delta*0.1
+        rings[0].position.y = 10 * Math.sin(state.tInner * 2*Math.PI) - 2
+    }
+
+    //moveOuterRing(delta, 5)
+    //moveMiddleRing(delta, 5)
+    //moveInnerRing(delta, 5)
 
     console.log(rings[0].position.y, rings[1].position.y, rings[2].position.y)
 }
