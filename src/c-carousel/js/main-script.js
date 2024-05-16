@@ -80,7 +80,7 @@ function createLights() {
     for(let i = 0; i < 3; i++) {
         for (let j = 0; j < 8; j++) {
             let r = distances[i]
-            let spotLight = new THREE.SpotLight( 0xffffff );
+            let spotLight = new THREE.SpotLight( 0xffffff )
             let x = r * Math.sin(j * Math.PI / 4)
             let z = r * Math.cos(j * Math.PI / 4)
             spotLight.position.set(x, 2, z)
@@ -100,17 +100,17 @@ function createLights() {
 class verticalSegment extends THREE.Curve {
 
 	constructor( scale = 1 ) {
-		super();
-		this.scale = scale;
+		super()
+		this.scale = scale
 	}
 
 	getPoint( t, optionalTarget = new THREE.Vector3() ) {
 
-		const tx = 0;
-		const ty = 20 * t;
-		const tz = 0;
+		const tx = 0
+		const ty = 20 * t
+		const tz = 0
 
-		return optionalTarget.set( tx, ty, tz ).multiplyScalar( this.scale );
+		return optionalTarget.set( tx, ty, tz ).multiplyScalar( this.scale )
 	}
 }
 
@@ -133,7 +133,7 @@ function createRings() {
 
     let extrudeSettings = {
         depth: 4,
-    };
+    }
 
     let geometry1 = new THREE.ExtrudeGeometry(ring1Shape, extrudeSettings)
     let material1 = new THREE.MeshStandardMaterial({ color: 0xff0000 })
@@ -201,52 +201,52 @@ function translateRings() {
 function createMobiusStrip() {
     let material = new THREE.MeshStandardMaterial({ color: 0xfffff0, side: THREE.DoubleSide })
     let geometry = createMobiusStripGeometry()
-	let mobiusStrip = new THREE.Mesh(geometry, material);
-	mobiusStrip.position.set(0, 13, 0);
+	let mobiusStrip = new THREE.Mesh(geometry, material)
+	mobiusStrip.position.set(0, 13, 0)
     mobiusStrip.scale.multiplyScalar(1)
     scene.add(mobiusStrip)
 }
 
 function createMobiusStripGeometry() {
     // base of the mobius strip is a plane
-    const geometry = new THREE.PlaneGeometry(1, 1, 60, 10);
-    const positions = geometry.attributes.position.array;
+    const geometry = new THREE.PlaneGeometry(1, 1, 60, 10)
+    const positions = geometry.attributes.position.array
 
     for (let i = 0; i < positions.length; i += 3) {
         // z = 0
-        const mobiusCoords = planeToMobiusStripPoint(positions[i], positions[i + 1]);
+        const mobiusCoords = planeToMobiusStripPoint(positions[i], positions[i + 1])
 
         // replace original point coords for its coords in the mobius strip
-        positions[i] = mobiusCoords[0];
-        positions[i + 1] = mobiusCoords[1];
-        positions[i + 2] = mobiusCoords[2];
+        positions[i] = mobiusCoords[0]
+        positions[i + 1] = mobiusCoords[1]
+        positions[i + 2] = mobiusCoords[2]
     }
 
     // rotate mobius strip to appear horizontally
     geometry.rotateX(.5 * Math.PI)
     geometry.rotateZ(.1 * Math.PI)
-    geometry.computeVertexNormals();
+    geometry.computeVertexNormals()
 
-    return geometry;
+    return geometry
 }
 
 function planeToMobiusStripPoint(x, y) {
 
     // Angle around mobius strip (x € [-0.5,0.5] so angle € [-pi,pi])
-    const angle = 2* Math.PI * x;
+    const angle = 2* Math.PI * x
 
     // Radius of points in mobius strip (y € [-0.5, 0.5])
-    const r = 1 + y * Math.cos(angle);
+    const r = 1 + y * Math.cos(angle)
 
     // x coordinate of point in mobius strip (polar to cartesian conversion)
-    const x1 = Math.cos(angle) * r;
+    const x1 = Math.cos(angle) * r
 
     // y coordinate of point in mobius strip (polar to cartesian conversion)
-    const y1 = Math.sin(angle) * r;
+    const y1 = Math.sin(angle) * r
 
     // z coordinate of point in mobius strip
-    const z1 = y * Math.sin(angle);
-    return [x1, y1, z1];
+    const z1 = y * Math.sin(angle)
+    return [x1, y1, z1]
 }
 
 ////////////
@@ -422,7 +422,7 @@ function onKeyDown(e) {
                 state.moveInnerRing = 1
             } else {
                 state.moveInnerRing = 0
-            };
+            }
             break
         case 50: // 2
             if(state.moveMiddleRing == 0){
