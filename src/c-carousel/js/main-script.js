@@ -41,6 +41,7 @@ function createScene() {
     createTube()
     createRings()
     createObjects()
+    createSkydome()
     translateRings()
     createMobiusStrip()
 }
@@ -176,6 +177,19 @@ function createObjects() {
             rings[i].add(object)
         }
     }
+}
+
+function createSkydome() {
+    let skyGeometry = new THREE.SphereGeometry(50, 50, 50, 0, Math.PI * 2, 0, Math.PI / 2)
+    let loader  = new THREE.TextureLoader()
+    let texture = loader.load( "textures/sky.jpg" )
+    let skyMaterial = new THREE.MeshStandardMaterial({
+        map: texture,
+    })
+    let skydome = new THREE.Mesh(skyGeometry, skyMaterial)
+    skydome.material.side = THREE.BackSide
+
+    scene.add(skydome)
 }
 
 function translateRings() {
