@@ -15,7 +15,7 @@ let scene
 let cameras = []
 let currentCamera
 let tube
-let morbiusBand
+let mobiusStrip
 let rings = []
 let objects = [[],[],[]]
 let objectsLights = []
@@ -28,7 +28,8 @@ let state = {
     moveMiddleRing: true,
     tMiddle: 0.064,
     moveInnerRing: true,
-    tInner: 0.128
+    tInner: 0.128,
+    moveMobiusStrip: true,
 }
 
 /////////////////////
@@ -201,7 +202,7 @@ function translateRings() {
 function createMobiusStrip() {
     let material = new THREE.MeshStandardMaterial({ color: 0xfffff0, side: THREE.DoubleSide })
     let geometry = createMobiusStripGeometry()
-	let mobiusStrip = new THREE.Mesh(geometry, material)
+	mobiusStrip = new THREE.Mesh(geometry, material)
 	mobiusStrip.position.set(0, 13, 0)
     mobiusStrip.scale.multiplyScalar(1)
     scene.add(mobiusStrip)
@@ -293,6 +294,10 @@ function update(delta) {
     if (state.moveInnerRing) {
         state.tInner += delta*0.1
         rings[0].position.y = 10 * Math.sin(state.tInner * 2*Math.PI) - 2
+    }
+
+    if (state.moveMobiusStrip) {
+        mobiusStrip.rotation.y -= 2 * delta
     }
 
     //moveOuterRing(delta, 5)
