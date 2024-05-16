@@ -180,9 +180,17 @@ function createObjects() {
 }
 
 function createSkydome() {
-    let skyGeometry = new THREE.SphereGeometry(50, 50, 50, 0, Math.PI * 2, 0, Math.PI / 2)
-    let loader  = new THREE.TextureLoader()
-    let texture = loader.load( "textures/sky.jpg" )
+    let skyGeometry = new THREE.SphereGeometry(
+        50,
+        50,
+        50,
+        0,
+        Math.PI * 2,
+        0,
+        Math.PI / 2
+    )
+    let loader = new THREE.TextureLoader()
+    let texture = loader.load('textures/sky.jpg')
     let skyMaterial = new THREE.MeshStandardMaterial({
         map: texture,
     })
@@ -260,7 +268,7 @@ function planeToMobiusStripPoint(x, y) {
 ////////////
 function update(delta) {
     'use strict'
-    objects.forEach((ring, i) => {
+    objects.forEach((ring) => {
         ring.forEach((object) => {
             object.rotation.y += 1 * delta
         })
