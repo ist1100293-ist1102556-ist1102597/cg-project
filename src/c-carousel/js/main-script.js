@@ -42,6 +42,7 @@ function createScene() {
     createRings()
     createObjects()
     translateRings()
+    createMobiusStrip()
 }
 
 //////////////////////
@@ -195,6 +196,57 @@ function translateRings() {
     rings[0].position.y = 10*Math.sin(2*Math.PI*state.tInner) - 2
     rings[1].position.y = 10*Math.sin(2*Math.PI*state.tMiddle) - 2
     rings[2].position.y = 10*Math.sin(2*Math.PI*state.tOuter) - 2
+}
+
+function createMobiusStrip() {
+    let material = new THREE.MeshStandardMaterial({ color: 0xfffff0, side: THREE.DoubleSide })
+    let geometry = createMobiusStripGeometry()
+	let mobiusStrip = new THREE.Mesh(geometry, material);
+	mobiusStrip.position.set(0, 13, 0);
+    mobiusStrip.scale.multiplyScalar(1)
+    scene.add(mobiusStrip)
+}
+
+function createMobiusStripGeometry() {
+    // base of the mobius strip is a plane
+    const geometry = new THREE.PlaneGeometry(1, 1, 60, 10);
+    const positions = geometry.attributes.position.array;
+
+    for (let i = 0; i < positions.length; i += 3) {
+        // z = 0
+        const mobiusCoords = planeToMobiusStripPoint(positions[i], positions[i + 1]);
+
+        // replace original point coords for its coords in the mobius strip
+        positions[i] = mobiusCoords[0];
+        positions[i + 1] = mobiusCoords[1];
+        positions[i + 2] = mobiusCoords[2];
+    }
+
+    // rotate mobius strip to appear horizontally
+    geometry.rotateX(.5 * Math.PI)
+    geometry.rotateZ(.1 * Math.PI)
+    geometry.computeVertexNormals();
+
+    return geometry;
+}
+
+function planeToMobiusStripPoint(x, y) {
+
+    // Angle around mobius strip (x € [-0.5,0.5] so angle € [-pi,pi])
+    const angle = 2* Math.PI * x;
+
+    // Radius of points in mobius strip (y € [-0.5, 0.5])
+    const r = 1 + y * Math.cos(angle);
+
+    // x coordinate of point in mobius strip (polar to cartesian conversion)
+    const x1 = Math.cos(angle) * r;
+
+    // y coordinate of point in mobius strip (polar to cartesian conversion)
+    const y1 = Math.sin(angle) * r;
+
+    // z coordinate of point in mobius strip
+    const z1 = y * Math.sin(angle);
+    return [x1, y1, z1];
 }
 
 ////////////
