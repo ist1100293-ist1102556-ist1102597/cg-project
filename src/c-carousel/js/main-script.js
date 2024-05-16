@@ -26,9 +26,9 @@ let state = {
     moveOuterRing: true,
     tOuter: 0,
     moveMiddleRing: true,
-    tMiddle: 0.065,
+    tMiddle: 0.064,
     moveInnerRing: true,
-    tInner: 0.146
+    tInner: 0.128
 }
 
 /////////////////////
@@ -192,9 +192,9 @@ function createObjects() {
 
 function translateRings() {
     'use strict'
-    rings[0].translateY(8)
-    rings[1].translateY(4)
-    rings[2].translateY(0)
+    rings[0].position.y = 10*Math.sin(2*Math.PI*state.tInner) - 2
+    rings[1].position.y = 10*Math.sin(2*Math.PI*state.tMiddle) - 2
+    rings[2].position.y = 10*Math.sin(2*Math.PI*state.tOuter) - 2
 }
 
 ////////////
