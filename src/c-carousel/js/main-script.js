@@ -10,14 +10,13 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js'
 
 let renderer
 let clock = new THREE.Clock()
-let delta
 let scene
 let cameras = []
 let currentCamera
 let tube
 let mobiusStrip
 let rings = []
-let objects = [[],[],[]]
+let objects = [[], [], []]
 let objectsLights = []
 let directionalLight
 let directionlLightOn = true
@@ -61,7 +60,6 @@ function createCameras() {
     cameras[0].lookAt(0, 0, 0)
 
     currentCamera = cameras[0]
-
 }
 
 /////////////////////
@@ -69,21 +67,21 @@ function createCameras() {
 /////////////////////
 function createLights() {
     'use strict'
-    let ambientLight = new THREE.AmbientLight(0xFFD580, 0.3)
+    let ambientLight = new THREE.AmbientLight(0xffd580, 0.3)
     scene.add(ambientLight)
-    directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.7)
+    directionalLight = new THREE.DirectionalLight(0xffffff, 0.7)
     directionalLight.position.set(100, 200, 100)
     directionalLight.target.position.set(0, 0, 0)
     scene.add(directionalLight.target)
     scene.add(directionalLight)
 
     let distances = [4, 8, 12]
-    for(let i = 0; i < 3; i++) {
+    for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 8; j++) {
             let r = distances[i]
-            let spotLight = new THREE.SpotLight( 0xffffff )
-            let x = r * Math.sin(j * Math.PI / 4)
-            let z = r * Math.cos(j * Math.PI / 4)
+            let spotLight = new THREE.SpotLight(0xffffff)
+            let x = r * Math.sin((j * Math.PI) / 4)
+            let z = r * Math.cos((j * Math.PI) / 4)
             spotLight.position.set(x, 2, z)
             spotLight.target.position.set(x, 100, z)
             spotLight.angle = Math.PI / 3
@@ -98,22 +96,6 @@ function createLights() {
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
-class verticalSegment extends THREE.Curve {
-
-	constructor( scale = 1 ) {
-		super()
-		this.scale = scale
-	}
-
-	getPoint( t, optionalTarget = new THREE.Vector3() ) {
-
-		const tx = 0
-		const ty = 20 * t
-		const tz = 0
-
-		return optionalTarget.set( tx, ty, tz ).multiplyScalar( this.scale )
-	}
-}
 
 function createTube() {
     'use strict'
@@ -157,7 +139,7 @@ function createRings() {
     rings[2] = new THREE.Object3D()
     rings[2].add(ring3)
 
-    rings.forEach(ring => {
+    rings.forEach((ring) => {
         scene.add(ring)
     })
 }
@@ -179,13 +161,17 @@ function createRingShape(innerRadius, outerRadius) {
 function createObjects() {
     'use strict'
     let distances = [4, 8, 12]
-    for(let i = 0; i < 3; i++) {
+    for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 8; j++) {
             let geometry = new THREE.BoxGeometry(2, 4, 2)
             let material = new THREE.MeshStandardMaterial({ color: 0xfffff0 })
             let object = new THREE.Mesh(geometry, material)
             let r = distances[i]
-            object.position.set(r * Math.sin(j * Math.PI / 4), 6, r * Math.cos(j * Math.PI / 4))
+            object.position.set(
+                r * Math.sin((j * Math.PI) / 4),
+                6,
+                r * Math.cos((j * Math.PI) / 4)
+            )
             objects[i].push(object)
             rings[i].add(object)
         }
@@ -194,16 +180,19 @@ function createObjects() {
 
 function translateRings() {
     'use strict'
-    rings[0].position.y = 10*Math.sin(2*Math.PI*state.tInner) - 2
-    rings[1].position.y = 10*Math.sin(2*Math.PI*state.tMiddle) - 2
-    rings[2].position.y = 10*Math.sin(2*Math.PI*state.tOuter) - 2
+    rings[0].position.y = 10 * Math.sin(2 * Math.PI * state.tInner) - 2
+    rings[1].position.y = 10 * Math.sin(2 * Math.PI * state.tMiddle) - 2
+    rings[2].position.y = 10 * Math.sin(2 * Math.PI * state.tOuter) - 2
 }
 
 function createMobiusStrip() {
-    let material = new THREE.MeshStandardMaterial({ color: 0xfffff0, side: THREE.DoubleSide })
+    let material = new THREE.MeshStandardMaterial({
+        color: 0xfffff0,
+        side: THREE.DoubleSide,
+    })
     let geometry = createMobiusStripGeometry()
-	mobiusStrip = new THREE.Mesh(geometry, material)
-	mobiusStrip.position.set(0, 13, 0)
+    mobiusStrip = new THREE.Mesh(geometry, material)
+    mobiusStrip.position.set(0, 13, 0)
     mobiusStrip.scale.multiplyScalar(1)
     scene.add(mobiusStrip)
 }
@@ -215,7 +204,10 @@ function createMobiusStripGeometry() {
 
     for (let i = 0; i < positions.length; i += 3) {
         // z = 0
-        const mobiusCoords = planeToMobiusStripPoint(positions[i], positions[i + 1])
+        const mobiusCoords = planeToMobiusStripPoint(
+            positions[i],
+            positions[i + 1]
+        )
 
         // replace original point coords for its coords in the mobius strip
         positions[i] = mobiusCoords[0]
@@ -224,17 +216,16 @@ function createMobiusStripGeometry() {
     }
 
     // rotate mobius strip to appear horizontally
-    geometry.rotateX(.5 * Math.PI)
-    geometry.rotateZ(.1 * Math.PI)
+    geometry.rotateX(0.5 * Math.PI)
+    geometry.rotateZ(0.1 * Math.PI)
     geometry.computeVertexNormals()
 
     return geometry
 }
 
 function planeToMobiusStripPoint(x, y) {
-
     // Angle around mobius strip (x € [-0.5,0.5] so angle € [-pi,pi])
-    const angle = 2* Math.PI * x
+    const angle = 2 * Math.PI * x
 
     // Radius of points in mobius strip (y € [-0.5, 0.5])
     const r = 1 + y * Math.cos(angle)
@@ -257,7 +248,7 @@ function update(delta) {
     'use strict'
     objects.forEach((ring, i) => {
         ring.forEach((object) => {
-            object.rotation.y += 1 * delta 
+            object.rotation.y += 1 * delta
         })
     })
     tube.rotation.y -= 0.5 * delta
@@ -272,101 +263,32 @@ function update(delta) {
     }
 
     if (!spotLightsOn) {
-        objectsLights.forEach(light => {
+        objectsLights.forEach((light) => {
             light.intensity = 0
         })
     } else {
-        objectsLights.forEach(light => {
+        objectsLights.forEach((light) => {
             light.intensity = 50
         })
     }
 
     if (state.moveOuterRing) {
-        state.tOuter += delta*0.1
-        rings[2].position.y = 10 * Math.sin(state.tOuter * 2*Math.PI) - 2
+        state.tOuter += delta * 0.1
+        rings[2].position.y = 10 * Math.sin(state.tOuter * 2 * Math.PI) - 2
     }
 
     if (state.moveMiddleRing) {
-        state.tMiddle += delta*0.1
-        rings[1].position.y = 10 * Math.sin(state.tMiddle * 2*Math.PI) - 2
+        state.tMiddle += delta * 0.1
+        rings[1].position.y = 10 * Math.sin(state.tMiddle * 2 * Math.PI) - 2
     }
 
     if (state.moveInnerRing) {
-        state.tInner += delta*0.1
-        rings[0].position.y = 10 * Math.sin(state.tInner * 2*Math.PI) - 2
+        state.tInner += delta * 0.1
+        rings[0].position.y = 10 * Math.sin(state.tInner * 2 * Math.PI) - 2
     }
 
     if (state.moveMobiusStrip) {
         mobiusStrip.rotation.y -= 2 * delta
-    }
-
-    //moveOuterRing(delta, 5)
-    //moveMiddleRing(delta, 5)
-    //moveInnerRing(delta, 5)
-
-    console.log(rings[0].position.y, rings[1].position.y, rings[2].position.y)
-}
-
-function moveOuterRing(delta,speed){
-    
-    // Invert movement
-    if(rings[2].position.y <= 0){
-        state.moveOuterRing = 1
-    }
-    
-    if(rings[2].position.y >= 16){
-        state.moveOuterRing = -1
-    }
-
-    // Apply movement
-    if (state.moveOuterRing === -1 && rings[2].position.y > 0) {
-        rings[2].translateY(-speed * delta)
-    }
-    
-    if (state.moveOuterRing === 1 && rings[2].position.y < 16) {
-        rings[2].translateY(speed * delta)
-    }
-}
-
-function moveMiddleRing(delta,speed){
-    
-    // Invert Movement
-    if(rings[1].position.y <= -4){
-        state.moveMiddleRing = 1
-    }
-    
-    if(rings[1].position.y >= 12){
-        state.moveMiddleRing = -1
-    }
-
-    // Apply movement
-    if (state.moveMiddleRing === -1 && rings[1].position.y > -4) {
-        rings[1].translateY(-speed * delta)
-    }
-    
-    if (state.moveMiddleRing === 1 && rings[1].position.y < 12) {
-        rings[1].translateY(speed * delta)
-    }
-}
-
-function moveInnerRing(delta,speed){
-    
-    // Invert movement
-    if(rings[0].position.y <= -8){
-        state.moveInnerRing = 1
-    }
-    
-    if(rings[0].position.y >= 8){
-        state.moveInnerRing = -1
-    }
-
-    // Apply movement
-    if (state.moveInnerRing === -1 && rings[0].position.y > -8) {
-        rings[0].translateY(-speed * delta)
-    }
-    
-    if (state.moveInnerRing === 1 && rings[0].position.y < 8) {
-        rings[0].translateY(speed * delta)
     }
 }
 
@@ -415,29 +337,29 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict'
-    switch(e.keyCode) {
+    switch (e.keyCode) {
         case 68: // D(d)
             directionlLightOn = !directionlLightOn
             break
-        case 83 : // S(s)
+        case 83: // S(s)
             spotLightsOn = !spotLightsOn
             break
         case 49: // 1
-            if(state.moveInnerRing == 0){
+            if (state.moveInnerRing == 0) {
                 state.moveInnerRing = 1
             } else {
                 state.moveInnerRing = 0
             }
             break
         case 50: // 2
-            if(state.moveMiddleRing == 0){
+            if (state.moveMiddleRing == 0) {
                 state.moveMiddleRing = 1
             } else {
                 state.moveMiddleRing = 0
             }
             break
         case 51: // 3
-            if(state.moveOuterRing == 0){
+            if (state.moveOuterRing == 0) {
                 state.moveOuterRing = 1
             } else {
                 state.moveOuterRing = 0
