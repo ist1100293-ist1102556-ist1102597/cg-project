@@ -16,6 +16,7 @@ let currentCamera
 let tube
 let mobiusStrip
 let rings = []
+let ring1, ring2, ring3
 let objects = [[], [], []]
 let objectsLights = []
 let directionalLight
@@ -30,6 +31,11 @@ let state = {
     tInner: 0.128,
     moveMobiusStrip: true,
 }
+let materials = {
+    lambert: [],
+    toon: [],
+    phong: [],
+}
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -38,12 +44,51 @@ function createScene() {
     'use strict'
     scene = new THREE.Scene()
     scene.add(new THREE.AxesHelper(10))
+    createMaterials()
     createTube()
     createRings()
     createObjects()
     createSkydome()
     translateRings()
     createMobiusStrip()
+}
+
+//////////////////////
+/* CREATE MATERIALS */
+//////////////////////
+function createMaterials() {
+    'use strict'
+    materials.phong.push(new THREE.MeshPhongMaterial({ color: 0xff0000 }))
+    materials.phong.push(new THREE.MeshPhongMaterial({ color: 0x00ff00 }))
+    materials.phong.push(new THREE.MeshPhongMaterial({ color: 0x0000ff }))
+    materials.phong.push(new THREE.MeshPhongMaterial({ color: 0xffff00 }))
+    materials.phong.push(
+        new THREE.MeshPhongMaterial({ color: 0x00ffff, side: THREE.DoubleSide })
+    )
+    materials.phong.push(new THREE.MeshPhongMaterial({ color: 0xff00ff }))
+
+    materials.lambert.push(new THREE.MeshLambertMaterial({ color: 0xff0000 }))
+    materials.lambert.push(new THREE.MeshLambertMaterial({ color: 0x00ff00 }))
+    materials.lambert.push(new THREE.MeshLambertMaterial({ color: 0x0000ff }))
+    materials.lambert.push(new THREE.MeshLambertMaterial({ color: 0xffff00 }))
+    materials.lambert.push(
+        new THREE.MeshLambertMaterial({
+            color: 0x00ffff,
+            side: THREE.DoubleSide,
+        })
+    )
+    materials.lambert.push(new THREE.MeshLambertMaterial({ color: 0xff00ff }))
+
+    materials.toon.push(new THREE.MeshToonMaterial({ color: 0xff0000 }))
+    materials.toon.push(new THREE.MeshToonMaterial({ color: 0x00ff00 }))
+    materials.toon.push(new THREE.MeshToonMaterial({ color: 0x0000ff }))
+    materials.toon.push(new THREE.MeshToonMaterial({ color: 0xffff00 }))
+    materials.toon.push(
+        new THREE.MeshToonMaterial({ color: 0x00ffff, side: THREE.DoubleSide })
+    )
+    materials.toon.push(new THREE.MeshToonMaterial({ color: 0xff00ff }))
+
+    materials.normal = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide })
 }
 
 //////////////////////
@@ -104,8 +149,7 @@ function createTube() {
     'use strict'
     let radius = 2
     let geometry = new THREE.CylinderGeometry(radius, radius, 24, 32, 1)
-    let material = new THREE.MeshStandardMaterial({ color: 0xffff00 })
-    tube = new THREE.Mesh(geometry, material)
+    tube = new THREE.Mesh(geometry, materials.phong[5])
 
     scene.add(tube)
 }
@@ -122,22 +166,19 @@ function createRings() {
     }
 
     let geometry1 = new THREE.ExtrudeGeometry(ring1Shape, extrudeSettings)
-    let material1 = new THREE.MeshStandardMaterial({ color: 0xff0000 })
-    let ring1 = new THREE.Mesh(geometry1, material1)
+    ring1 = new THREE.Mesh(geometry1, materials.phong[0])
     ring1.rotateX(-Math.PI / 2)
     rings[0] = new THREE.Object3D()
     rings[0].add(ring1)
 
     let geometry2 = new THREE.ExtrudeGeometry(ring2Shape, extrudeSettings)
-    let material2 = new THREE.MeshStandardMaterial({ color: 0x00ff00 })
-    let ring2 = new THREE.Mesh(geometry2, material2)
+    ring2 = new THREE.Mesh(geometry2, materials.phong[1])
     ring2.rotateX(-Math.PI / 2)
     rings[1] = new THREE.Object3D()
     rings[1].add(ring2)
 
     let geometry3 = new THREE.ExtrudeGeometry(ring3Shape, extrudeSettings)
-    let material3 = new THREE.MeshStandardMaterial({ color: 0x0000ff })
-    let ring3 = new THREE.Mesh(geometry3, material3)
+    ring3 = new THREE.Mesh(geometry3, materials.phong[2])
     ring3.rotateX(-Math.PI / 2)
     rings[2] = new THREE.Object3D()
     rings[2].add(ring3)
@@ -168,7 +209,7 @@ function createObjects() {
         for (let j = 0; j < 8; j++) {
             let geometry = new THREE.BoxGeometry(2, 4, 2)
             let material = new THREE.MeshStandardMaterial({ color: 0xfffff0 })
-            let object = new THREE.Mesh(geometry, material)
+            let object = new THREE.Mesh(geometry, materials.phong[3])
             let r = distances[i]
             object.position.set(
                 r * Math.sin((j * Math.PI) / 4),
@@ -210,12 +251,8 @@ function translateRings() {
 }
 
 function createMobiusStrip() {
-    let material = new THREE.MeshStandardMaterial({
-        color: 0xfffff0,
-        side: THREE.DoubleSide,
-    })
     let geometry = createMobiusStripGeometry()
-    mobiusStrip = new THREE.Mesh(geometry, material)
+    mobiusStrip = new THREE.Mesh(geometry, materials.phong[4])
     mobiusStrip.position.set(0, 13, 0)
     mobiusStrip.scale.multiplyScalar(1)
     scene.add(mobiusStrip)
@@ -409,7 +446,65 @@ function onKeyDown(e) {
                 state.moveOuterRing = 0
             }
             break
+        case 81: // Q(q)
+            changeMaterial('lambert')
+            break
+        case 87: // W(w)
+            changeMaterial('phong')
+            break
+        case 69: // E(e)
+            changeMaterial('toon')
+            break
+        case 82: // R(r)
+            changeMaterial('normal')
+            break
     }
+}
+
+function changeMaterial(type) {
+    'use strict'
+    switch (type) {
+        case 'lambert':
+            ring1.material = materials.lambert[0]
+            ring2.material = materials.lambert[1]
+            ring3.material = materials.lambert[2]
+            changeObjectsMaterial(materials.lambert[3])
+            mobiusStrip.material = materials.lambert[4]
+            tube.material = materials.lambert[5]
+            break
+        case 'phong':
+            ring1.material = materials.phong[0]
+            ring2.material = materials.phong[1]
+            ring3.material = materials.phong[2]
+            changeObjectsMaterial(materials.phong[3])
+            mobiusStrip.material = materials.phong[4]
+            tube.material = materials.phong[5]
+            break
+        case 'toon':
+            ring1.material = materials.toon[0]
+            ring2.material = materials.toon[1]
+            ring3.material = materials.toon[2]
+            changeObjectsMaterial(materials.toon[3])
+            mobiusStrip.material = materials.toon[4]
+            tube.material = materials.toon[5]
+            break
+        case 'normal':
+            ring1.material = materials.normal
+            ring2.material = materials.normal
+            ring3.material = materials.normal
+            changeObjectsMaterial(materials.normal)
+            mobiusStrip.material = materials.normal
+            tube.material = materials.normal
+            break
+    }
+}
+
+function changeObjectsMaterial(mat) {
+    objects.forEach((l) => {
+        l.forEach((object) => {
+            object.material = mat
+        })
+    })
 }
 
 ///////////////////////
