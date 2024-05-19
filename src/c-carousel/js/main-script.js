@@ -3,6 +3,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { VRButton } from 'three/addons/webxr/VRButton.js'
 import * as Stats from 'three/addons/libs/stats.module.js'
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js'
+import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js'
+import { ParametricGeometries } from 'three/addons/geometries/ParametricGeometries.js'
 
 //////////////////////
 /* GLOBAL VARIABLES */
@@ -36,6 +38,7 @@ let materials = {
     toon: [],
     phong: [],
 }
+let geometries = []
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -44,6 +47,7 @@ function createScene() {
     'use strict'
     scene = new THREE.Scene()
     scene.add(new THREE.AxesHelper(10))
+    generateParametricGeometries()
     createMaterials()
     createTube()
     createRings()
@@ -61,7 +65,9 @@ function createMaterials() {
     materials.phong.push(new THREE.MeshPhongMaterial({ color: 0xff0000 }))
     materials.phong.push(new THREE.MeshPhongMaterial({ color: 0x00ff00 }))
     materials.phong.push(new THREE.MeshPhongMaterial({ color: 0x0000ff }))
-    materials.phong.push(new THREE.MeshPhongMaterial({ color: 0xffff00 }))
+    materials.phong.push(new THREE.MeshPhongMaterial({ 
+        color: 0xffff00,
+        side: THREE.DoubleSide}))
     materials.phong.push(
         new THREE.MeshPhongMaterial({ color: 0x00ffff, side: THREE.DoubleSide })
     )
@@ -70,7 +76,10 @@ function createMaterials() {
     materials.lambert.push(new THREE.MeshLambertMaterial({ color: 0xff0000 }))
     materials.lambert.push(new THREE.MeshLambertMaterial({ color: 0x00ff00 }))
     materials.lambert.push(new THREE.MeshLambertMaterial({ color: 0x0000ff }))
-    materials.lambert.push(new THREE.MeshLambertMaterial({ color: 0xffff00 }))
+    materials.lambert.push(new THREE.MeshLambertMaterial({ 
+        color: 0xffff00,
+        side: THREE.DoubleSide
+     }))
     materials.lambert.push(
         new THREE.MeshLambertMaterial({
             color: 0x00ffff,
@@ -82,7 +91,10 @@ function createMaterials() {
     materials.toon.push(new THREE.MeshToonMaterial({ color: 0xff0000 }))
     materials.toon.push(new THREE.MeshToonMaterial({ color: 0x00ff00 }))
     materials.toon.push(new THREE.MeshToonMaterial({ color: 0x0000ff }))
-    materials.toon.push(new THREE.MeshToonMaterial({ color: 0xffff00 }))
+    materials.toon.push(new THREE.MeshToonMaterial({ 
+        color: 0xffff00, 
+        side: THREE.DoubleSide
+    }))
     materials.toon.push(
         new THREE.MeshToonMaterial({ color: 0x00ffff, side: THREE.DoubleSide })
     )
@@ -207,8 +219,7 @@ function createObjects() {
     let distances = [4, 8, 12]
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 8; j++) {
-            let geometry = new THREE.BoxGeometry(2, 4, 2)
-            let material = new THREE.MeshStandardMaterial({ color: 0xfffff0 })
+            let geometry = geometries[j]
             let object = new THREE.Mesh(geometry, materials.phong[3])
             let r = distances[i]
             object.position.set(
@@ -300,6 +311,67 @@ function planeToMobiusStripPoint(x, y) {
     // z coordinate of point in mobius strip
     const z1 = y * Math.sin(angle)
     return [x1, y1, z1]
+}
+
+function generateParametricGeometries() {
+    geometries.push(new ParametricGeometry(createHyperboloid1, 20, 20 ))
+    geometries.push(new ParametricGeometry(createHyperboloid2, 20, 20 ))
+    geometries.push(new ParametricGeometry(createElypsoid, 20, 20 ))
+    geometries.push(new ParametricGeometry(createSphere, 20, 20 ))
+    geometries.push(new ParametricGeometry(createTorus, 20, 20 ))
+    geometries.push(new ParametricGeometry(createCylinder,20,20))
+    geometries.push(new ParametricGeometry(createHelicoid,30,30))
+    geometries.push(new ParametricGeometry(createSombrero,30,30))
+}
+
+function createHyperboloid1(u, v, target) { 
+    target.x = 1 * Math.cosh(2*v - 1)*Math.cos(Math.PI * 2 * u)
+    target.z = 1 * Math.cosh(2*v - 1)*Math.sin(Math.PI * 2 * u)
+    target.y = 1 * Math.sinh(2*v - 1)
+}
+
+function createHyperboloid2(u, v, target) {
+    target.x = 1 * Math.sinh(2*v - 1)*Math.cos(Math.PI * 2 * u)
+    target.z = 1 * Math.sinh(2*v - 1)*Math.sin(Math.PI * 2 * u)
+    target.y = 2 * Math.cosh(2*v - 1) - 3.5
+}
+
+function createElypsoid(u, v, target) {
+    target.x = 0.8 * Math.cos(Math.PI * 2 * u) * Math.sin(Math.PI * v)
+    target.z = 1.2 * Math.sin(Math.PI * 2 * u) * Math.sin(Math.PI * v)
+    target.y = 0.8 * Math.cos(Math.PI * v) - 0.5
+}
+
+function createSphere(u, v, target) {
+    target.x = 1 * Math.sin(Math.PI * u) * Math.cos(Math.PI * 2 * v)
+    target.z = 1 * Math.sin(Math.PI * u) * Math.sin(Math.PI * 2 * v)
+    target.y = 1 * Math.cos(Math.PI * u)
+}
+
+function createTorus(u, v, target) {
+    let R = 1
+    let r = 0.5
+    target.x = (R + r * Math.cos(Math.PI * 2 * v)) * Math.cos(Math.PI * 2 * u)
+    target.z = (R + r * Math.cos(Math.PI * 2 * v)) * Math.sin(Math.PI * 2 * u)
+    target.y = r * Math.sin(Math.PI * 2 * v)
+}
+
+function createCylinder(u, v, target) {
+    target.x = 1 * Math.cos(Math.PI * 2 * v)
+    target.z = 1 * Math.sin(Math.PI * 2 * v)
+    target.y = 2*u - 1
+}
+
+function createHelicoid(u, v, target) {
+    target.x = u * Math.cos(3 * Math.PI * 2 * v)
+    target.z = u * Math.sin(3 * Math.PI * 2 * v)
+    target.y = 2*v
+}
+
+function createSombrero(u, v, target) {
+    target.x = 1.5 * u * Math.cos(Math.PI * 2 * v)
+    target.z = 1.5 * u * Math.sin(Math.PI * 2 * v)
+    target.y = Math.sin(6*u)/(6*u) + 1/6
 }
 
 ////////////
