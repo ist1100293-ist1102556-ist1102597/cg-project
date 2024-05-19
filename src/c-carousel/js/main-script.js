@@ -196,7 +196,7 @@ function createSkydome() {
     })
     let skydome = new THREE.Mesh(skyGeometry, skyMaterial)
     skydome.material.side = THREE.BackSide
-
+    skydome.position.set(0, -12, 0)
     scene.add(skydome)
 }
 
