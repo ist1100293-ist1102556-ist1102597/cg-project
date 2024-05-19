@@ -30,6 +30,7 @@ let state = {
     tInner: 0.128,
     moveMobiusStrip: true,
 }
+let controls
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -59,6 +60,8 @@ function createCameras() {
     )
     cameras[0].position.set(20, 25, 20)
     cameras[0].lookAt(0, 0, 0)
+
+    cameras[1] = new THREE.StereoCamera()
 
     currentCamera = cameras[0]
 }
@@ -319,8 +322,26 @@ function update(delta) {
 /////////////
 function render() {
     'use strict'
-    renderer.render(scene, currentCamera)
+    if (currentCamera === cameras[1]) {
+        const size = renderer.getSize(new THREE.Vector2())
+        renderer.setScissorTest(true)
+
+        // Left eye
+        renderer.setScissor(0, 0, size.width / 2, size.height)
+        renderer.setViewport(0, 0, size.width / 2, size.height)
+        renderer.render(scene, currentCamera.cameraL)
+
+        // Right eye
+        renderer.setScissor(size.width / 2, 0, size.width / 2, size.height)
+        renderer.setViewport(size.width / 2, 0, size.width / 2, size.height)
+        renderer.render(scene, currentCamera.cameraR)
+
+        renderer.setScissorTest(false)
+    } else {
+        renderer.render(scene, currentCamera)
+    }
 }
+
 
 ////////////////////////////////
 /* INITIALIZE ANIMATION CYCLE */
@@ -334,6 +355,9 @@ function init() {
     document.body.appendChild(renderer.domElement)
     document.body.appendChild(VRButton.createButton(renderer))
     renderer.xr.enabled = true
+
+    // Event listener for entering VR mode
+    renderer.xr.addEventListener('sessionstart', switchToStereoCamera)
 
     window.addEventListener('resize', onResize)
     window.addEventListener('keydown', onKeyDown)
@@ -395,6 +419,13 @@ function onKeyDown(e) {
 ///////////////////////
 function onKeyUp(e) {
     'use strict'
+}
+
+///////////////////////
+/* SWITCH CAMERAS */
+///////////////////////
+function switchToStereoCamera() {
+    currentCamera = cameras[1] // Stereo Camera
 }
 
 init()
