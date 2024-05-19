@@ -30,7 +30,6 @@ let state = {
     tInner: 0.128,
     moveMobiusStrip: true,
 }
-let controls
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -341,7 +340,6 @@ function render() {
         renderer.render(scene, currentCamera)
     }
 }
-
 
 ////////////////////////////////
 /* INITIALIZE ANIMATION CYCLE */
