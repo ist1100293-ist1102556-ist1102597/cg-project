@@ -228,6 +228,7 @@ function createObjects() {
                 6,
                 r * Math.cos((j * Math.PI) / 4)
             )
+            object.rotateZ(Math.PI / (i+1))
             objects[i].push(object)
             rings[i].add(object)
         }
@@ -325,10 +326,10 @@ function generateParametricGeometries() {
     geometries.push(new ParametricGeometry(createSombrero, 30, 30))
 }
 
-function createHyperboloid1(u, v, target) {
-    target.x = 1 * Math.cosh(2 * v - 1) * Math.cos(Math.PI * 2 * u)
-    target.z = 1 * Math.cosh(2 * v - 1) * Math.sin(Math.PI * 2 * u)
-    target.y = 1 * Math.sinh(2 * v - 1)
+function createHyperboloid1(u, v, target) { 
+    target.x = 0.8 * Math.cosh(2*v - 1)*Math.cos(Math.PI * 2 * u)
+    target.z = 0.8 * Math.cosh(2*v - 1)*Math.sin(Math.PI * 2 * u)
+    target.y = 0.8 * Math.sinh(2*v - 1)
 }
 
 function createHyperboloid2(u, v, target) {
