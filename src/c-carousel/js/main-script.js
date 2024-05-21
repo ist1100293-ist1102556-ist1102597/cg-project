@@ -144,7 +144,7 @@ function createLights() {
         }
     }
 
-    for(let i = 0; i < 8; i++) {
+    for (let i = 0; i < 8; i++) {
         let pointLight = new THREE.SpotLight(0xffffff)
         let x = 2 * Math.sin((i * Math.PI) / 4)
         let z = 2 * Math.cos((i * Math.PI) / 4)
@@ -372,7 +372,8 @@ function createHelicoid(u, v, target) {
 function createSombrero(u, v, target) {
     target.x = 1.5 * u * Math.cos(Math.PI * 2 * v)
     target.z = 1.5 * u * Math.sin(Math.PI * 2 * v)
-    target.y = Math.sin(6 * u) / (6 * u) + 1 / 6
+    // Added 0.1 to avoid division by zero (u goes from 0 to 1 so its always positive)
+    target.y = Math.sin(6 * u) / (6 * u + 0.1) + 1 / 6
 }
 
 ////////////
