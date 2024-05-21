@@ -134,13 +134,14 @@ function createLights() {
             let spotLight = new THREE.SpotLight(0xffffff)
             let x = r * Math.sin((j * Math.PI) / 4)
             let z = r * Math.cos((j * Math.PI) / 4)
-            spotLight.position.set(x, 2, z)
+            spotLight.position.set(x, 6, z)
             spotLight.target.position.set(x, 100, z)
-            spotLight.angle = Math.PI / 3
-            scene.add(spotLight.target)
-            spotLight.intensity = 1
-            rings[i].add(spotLight)
+            spotLight.angle = Math.PI / 8
+            spotLight.intensity = 50
             objectsLights.push(spotLight)
+            rings[i].add(spotLight)
+            rings[i].add(spotLight.target)
+            rings[i].add(new THREE.SpotLightHelper(spotLight))
         }
     }
 
@@ -223,13 +224,16 @@ function createObjects() {
             let geometry = geometries[j]
             let object = new THREE.Mesh(geometry, materials.phong[3])
             let r = distances[i]
-            object.scale.x = object.scale.y = object.scale.z = Math.random() * 0.5 + 0.5
+            object.scale.x =
+                object.scale.y =
+                object.scale.z =
+                    Math.random() * 0.5 + 0.5
             object.position.set(
                 r * Math.sin((j * Math.PI) / 4),
                 6,
                 r * Math.cos((j * Math.PI) / 4)
             )
-            object.rotateZ(Math.PI / (i+1))
+            object.rotateZ(Math.PI / (i + 1))
             objects[i].push(object)
             rings[i].add(object)
         }
@@ -327,10 +331,10 @@ function generateParametricGeometries() {
     geometries.push(new ParametricGeometry(createSombrero, 30, 30))
 }
 
-function createHyperboloid1(u, v, target) { 
-    target.x = 0.8 * Math.cosh(2*v - 1)*Math.cos(Math.PI * 2 * u)
-    target.z = 0.8 * Math.cosh(2*v - 1)*Math.sin(Math.PI * 2 * u)
-    target.y = 0.8 * Math.sinh(2*v - 1)
+function createHyperboloid1(u, v, target) {
+    target.x = 0.8 * Math.cosh(2 * v - 1) * Math.cos(Math.PI * 2 * u)
+    target.z = 0.8 * Math.cosh(2 * v - 1) * Math.sin(Math.PI * 2 * u)
+    target.y = 0.8 * Math.sinh(2 * v - 1)
 }
 
 function createHyperboloid2(u, v, target) {
@@ -405,7 +409,7 @@ function update(delta) {
         })
     } else {
         objectsLights.forEach((light) => {
-            light.intensity = 1
+            light.intensity = 50
         })
     }
 
@@ -508,6 +512,22 @@ function onKeyDown(e) {
     'use strict'
     switch (e.keyCode) {
         case 68: // D(d)
+            rings.forEach((ring) => {
+                console.log('--------------Ring--------------')
+                console.log(ring.position)
+                ring.children.forEach((object) => {
+                    if (object.geometry instanceof THREE.ExtrudeGeometry) {
+                        console.log('Anel: ' + object.position.y)
+                    }
+
+                    if (object.geometry instanceof ParametricGeometry) {
+                        console.log('Objeto: ' + object.position.y)
+                    }
+                    if (object instanceof THREE.SpotLight) {
+                        console.log('Luz: ' + object.position.y)
+                    }
+                })
+            })
             directionlLightOn = !directionlLightOn
             break
         case 83: // S(s)
