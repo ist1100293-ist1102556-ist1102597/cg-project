@@ -24,6 +24,7 @@ let objectsLights = []
 let directionalLight
 let directionlLightOn = true
 let spotLightsOn = true
+let pointLightsOn = true
 let state = {
     moveOuterRing: true,
     tOuter: 0,
@@ -39,6 +40,7 @@ let materials = {
     phong: [],
 }
 let geometries = []
+let pointLights = []
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -150,6 +152,15 @@ function createLights() {
             rings[i].add(spotLight)
             objectsLights.push(spotLight)
         }
+    }
+
+    for(let i = 0; i < 8; i++) {
+        let pointLight = new THREE.SpotLight(0xffffff)
+        let x = 2 * Math.sin((i * Math.PI) / 4)
+        let z = 2 * Math.cos((i * Math.PI) / 4)
+        pointLight.position.set(x, 14.5, z)
+        pointLights.push(pointLight)
+        scene.add(pointLight)
     }
 }
 
@@ -401,7 +412,17 @@ function update(delta) {
         })
     } else {
         objectsLights.forEach((light) => {
-            light.intensity = 50
+            light.intensity = 1
+        })
+    }
+
+    if (!pointLightsOn) {
+        pointLights.forEach((light) => {
+            light.intensity = 0
+        })
+    } else {
+        pointLights.forEach((light) => {
+            light.intensity = 1
         })
     }
 
@@ -496,6 +517,9 @@ function onKeyDown(e) {
             break
         case 83: // S(s)
             spotLightsOn = !spotLightsOn
+            break
+        case 80: // P(p)
+            pointLightsOn = !pointLightsOn
             break
         case 49: // 1
             if (state.moveInnerRing == 0) {
