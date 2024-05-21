@@ -265,30 +265,46 @@ function translateRings() {
 }
 
 function createMobiusStrip() {
-    let geometry = createMobiusStripGeometry()
+    let geometry = createMobiusStripGeometry(30,30)
     mobiusStrip = new THREE.Mesh(geometry, materials.phong[4])
     mobiusStrip.position.set(0, 13, 0)
-    mobiusStrip.scale.multiplyScalar(1)
     scene.add(mobiusStrip)
 }
 
-function createMobiusStripGeometry() {
-    // base of the mobius strip is a plane
-    const geometry = new THREE.PlaneGeometry(1, 1, 60, 10)
-    const positions = geometry.attributes.position.array
+function createMobiusStripGeometry(stacks, slices) {
+    // base of the mobius strip is a buffer geometry
+    const geometry = new THREE.BufferGeometry();
 
-    for (let i = 0; i < positions.length; i += 3) {
-        // z = 0
-        const mobiusCoords = planeToMobiusStripPoint(
-            positions[i],
-            positions[i + 1]
-        )
+    let indices = []
+    let coords = []
 
-        // replace original point coords for its coords in the mobius strip
-        positions[i] = mobiusCoords[0]
-        positions[i + 1] = mobiusCoords[1]
-        positions[i + 2] = mobiusCoords[2]
+    // generate vertex coordinates for mobius strip
+    for(let v = -0.5; v <= 0.5; v+=1/stacks) {
+        for(let u = -0.5; u <= 0.5; u+=1/slices) {
+            coords = coords.concat(pointToMobiusCoords(u,v))
+        }        
     }
+
+    // generate indices for mobius strip
+    for ( let i = 0; i < stacks; i ++ ) {
+        for ( let j = 0; j < slices; j ++ ) {
+            const a = i * (slices + 1) + j;
+            const b = i * (slices + 1) + j + 1;
+            const c = ( i + 1 ) * (slices + 1) + j + 1;
+            const d = ( i + 1 ) * (slices + 1) + j;
+
+            // faces one and two
+            indices.push( a, b, d );
+            indices.push( b, c, d );
+        }
+    }
+
+    // set vertices
+    // itemSize = 3 because there are 3 values (components) per vertex
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array(coords), 3 ));
+
+    // set indices
+    geometry.setIndex( indices );
 
     // rotate mobius strip to appear horizontally
     geometry.rotateX(0.5 * Math.PI)
@@ -298,12 +314,12 @@ function createMobiusStripGeometry() {
     return geometry
 }
 
-function planeToMobiusStripPoint(x, y) {
-    // Angle around mobius strip (x € [-0.5,0.5] so angle € [-pi,pi])
-    const angle = 2 * Math.PI * x
+function pointToMobiusCoords(u, v) {
+    // Angle around mobius strip (u € [-0.5,0.5] so angle € [-pi,pi])
+    const angle = 2 * Math.PI * u
 
-    // Radius of points in mobius strip (y € [-0.5, 0.5])
-    const r = 1 + y * Math.cos(angle)
+    // Radius of points in mobius strip (v € [-0.5, 0.5])
+    const r = 1 + v * Math.cos(angle)
 
     // x coordinate of point in mobius strip (polar to cartesian conversion)
     const x1 = Math.cos(angle) * r
@@ -312,7 +328,7 @@ function planeToMobiusStripPoint(x, y) {
     const y1 = Math.sin(angle) * r
 
     // z coordinate of point in mobius strip
-    const z1 = y * Math.sin(angle)
+    const z1 = v * Math.sin(angle)
     return [x1, y1, z1]
 }
 
