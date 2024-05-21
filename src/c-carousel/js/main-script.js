@@ -496,6 +496,8 @@ function onResize() {
     'use strict'
 
     renderer.setSize(window.innerWidth, window.innerHeight)
+    cameras[0].aspect = window.innerWidth / window.innerHeight
+    cameras[0].updateProjectionMatrix()
 }
 
 ///////////////////////
