@@ -35,9 +35,11 @@ let state = {
     moveMobiusStrip: true,
 }
 let materials = {
+    basic: [],
     lambert: [],
     toon: [],
     phong: [],
+    normal: [],
 }
 let geometries = []
 let pointLights = []
@@ -64,45 +66,33 @@ function createScene() {
 //////////////////////
 function createMaterials() {
     'use strict'
-    materials.phong.push(new THREE.MeshPhongMaterial({ color: 0xff0000 }))
-    materials.phong.push(new THREE.MeshPhongMaterial({ color: 0x00ff00 }))
-    materials.phong.push(new THREE.MeshPhongMaterial({ color: 0x0000ff }))
-    materials.phong.push(new THREE.MeshPhongMaterial({ 
-        color: 0xffff00,
-        side: THREE.DoubleSide}))
-    materials.phong.push(
-        new THREE.MeshPhongMaterial({ color: 0x00ffff, side: THREE.DoubleSide })
-    )
-    materials.phong.push(new THREE.MeshPhongMaterial({ color: 0xff00ff }))
-
-    materials.lambert.push(new THREE.MeshLambertMaterial({ color: 0xff0000 }))
-    materials.lambert.push(new THREE.MeshLambertMaterial({ color: 0x00ff00 }))
-    materials.lambert.push(new THREE.MeshLambertMaterial({ color: 0x0000ff }))
-    materials.lambert.push(new THREE.MeshLambertMaterial({ 
-        color: 0xffff00,
-        side: THREE.DoubleSide
-     }))
-    materials.lambert.push(
-        new THREE.MeshLambertMaterial({
-            color: 0x00ffff,
-            side: THREE.DoubleSide,
-        })
-    )
-    materials.lambert.push(new THREE.MeshLambertMaterial({ color: 0xff00ff }))
-
-    materials.toon.push(new THREE.MeshToonMaterial({ color: 0xff0000 }))
-    materials.toon.push(new THREE.MeshToonMaterial({ color: 0x00ff00 }))
-    materials.toon.push(new THREE.MeshToonMaterial({ color: 0x0000ff }))
-    materials.toon.push(new THREE.MeshToonMaterial({ 
-        color: 0xffff00, 
-        side: THREE.DoubleSide
-    }))
-    materials.toon.push(
-        new THREE.MeshToonMaterial({ color: 0x00ffff, side: THREE.DoubleSide })
-    )
-    materials.toon.push(new THREE.MeshToonMaterial({ color: 0xff00ff }))
-
-    materials.normal = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide })
+    let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0x00ffff, 0xff00ff]
+    colors.forEach((color) => {
+        materials.basic.push(
+            new THREE.MeshBasicMaterial({
+                color: color,
+                side: THREE.DoubleSide,
+            })
+        )
+        materials.phong.push(
+            new THREE.MeshPhongMaterial({
+                color: color,
+                side: THREE.DoubleSide,
+            })
+        )
+        materials.lambert.push(
+            new THREE.MeshLambertMaterial({
+                color: color,
+                side: THREE.DoubleSide,
+            })
+        )
+        materials.toon.push(
+            new THREE.MeshToonMaterial({ color: color, side: THREE.DoubleSide })
+        )
+        materials.normal.push(
+            new THREE.MeshNormalMaterial({ side: THREE.DoubleSide })
+        )
+    })
 }
 
 //////////////////////
@@ -325,26 +315,26 @@ function planeToMobiusStripPoint(x, y) {
 }
 
 function generateParametricGeometries() {
-    geometries.push(new ParametricGeometry(createHyperboloid1, 20, 20 ))
-    geometries.push(new ParametricGeometry(createHyperboloid2, 20, 20 ))
-    geometries.push(new ParametricGeometry(createElypsoid, 20, 20 ))
-    geometries.push(new ParametricGeometry(createSphere, 20, 20 ))
-    geometries.push(new ParametricGeometry(createTorus, 20, 20 ))
-    geometries.push(new ParametricGeometry(createCylinder,20,20))
-    geometries.push(new ParametricGeometry(createHelicoid,30,30))
-    geometries.push(new ParametricGeometry(createSombrero,30,30))
+    geometries.push(new ParametricGeometry(createHyperboloid1, 20, 20))
+    geometries.push(new ParametricGeometry(createHyperboloid2, 20, 20))
+    geometries.push(new ParametricGeometry(createElypsoid, 20, 20))
+    geometries.push(new ParametricGeometry(createSphere, 20, 20))
+    geometries.push(new ParametricGeometry(createTorus, 20, 20))
+    geometries.push(new ParametricGeometry(createCylinder, 20, 20))
+    geometries.push(new ParametricGeometry(createHelicoid, 30, 30))
+    geometries.push(new ParametricGeometry(createSombrero, 30, 30))
 }
 
-function createHyperboloid1(u, v, target) { 
-    target.x = 1 * Math.cosh(2*v - 1)*Math.cos(Math.PI * 2 * u)
-    target.z = 1 * Math.cosh(2*v - 1)*Math.sin(Math.PI * 2 * u)
-    target.y = 1 * Math.sinh(2*v - 1)
+function createHyperboloid1(u, v, target) {
+    target.x = 1 * Math.cosh(2 * v - 1) * Math.cos(Math.PI * 2 * u)
+    target.z = 1 * Math.cosh(2 * v - 1) * Math.sin(Math.PI * 2 * u)
+    target.y = 1 * Math.sinh(2 * v - 1)
 }
 
 function createHyperboloid2(u, v, target) {
-    target.x = 1 * Math.sinh(2*v - 1)*Math.cos(Math.PI * 2 * u)
-    target.z = 1 * Math.sinh(2*v - 1)*Math.sin(Math.PI * 2 * u)
-    target.y = 2 * Math.cosh(2*v - 1) - 3.5
+    target.x = 1 * Math.sinh(2 * v - 1) * Math.cos(Math.PI * 2 * u)
+    target.z = 1 * Math.sinh(2 * v - 1) * Math.sin(Math.PI * 2 * u)
+    target.y = 2 * Math.cosh(2 * v - 1) - 3.5
 }
 
 function createElypsoid(u, v, target) {
@@ -370,19 +360,19 @@ function createTorus(u, v, target) {
 function createCylinder(u, v, target) {
     target.x = 1 * Math.cos(Math.PI * 2 * v)
     target.z = 1 * Math.sin(Math.PI * 2 * v)
-    target.y = 2*u - 1
+    target.y = 2 * u - 1
 }
 
 function createHelicoid(u, v, target) {
     target.x = u * Math.cos(3 * Math.PI * 2 * v)
     target.z = u * Math.sin(3 * Math.PI * 2 * v)
-    target.y = 2*v
+    target.y = 2 * v
 }
 
 function createSombrero(u, v, target) {
     target.x = 1.5 * u * Math.cos(Math.PI * 2 * v)
     target.z = 1.5 * u * Math.sin(Math.PI * 2 * v)
-    target.y = Math.sin(6*u)/(6*u) + 1/6
+    target.y = Math.sin(6 * u) / (6 * u) + 1 / 6
 }
 
 ////////////
@@ -554,45 +544,42 @@ function onKeyDown(e) {
         case 82: // R(r)
             changeMaterial('normal')
             break
+        case 84: // T(t)
+            changeMaterial('basic')
+            break
     }
 }
 
 function changeMaterial(type) {
     'use strict'
+    let choice
     switch (type) {
+        case 'basic':
+            choice = materials.basic
+            break
         case 'lambert':
-            ring1.material = materials.lambert[0]
-            ring2.material = materials.lambert[1]
-            ring3.material = materials.lambert[2]
-            changeObjectsMaterial(materials.lambert[3])
-            mobiusStrip.material = materials.lambert[4]
-            tube.material = materials.lambert[5]
+            choice = materials.lambert
             break
         case 'phong':
-            ring1.material = materials.phong[0]
-            ring2.material = materials.phong[1]
-            ring3.material = materials.phong[2]
-            changeObjectsMaterial(materials.phong[3])
-            mobiusStrip.material = materials.phong[4]
-            tube.material = materials.phong[5]
+            choice = materials.phong
             break
         case 'toon':
-            ring1.material = materials.toon[0]
-            ring2.material = materials.toon[1]
-            ring3.material = materials.toon[2]
-            changeObjectsMaterial(materials.toon[3])
-            mobiusStrip.material = materials.toon[4]
-            tube.material = materials.toon[5]
+            choice = materials.toon
             break
         case 'normal':
-            ring1.material = materials.normal
-            ring2.material = materials.normal
-            ring3.material = materials.normal
-            changeObjectsMaterial(materials.normal)
-            mobiusStrip.material = materials.normal
-            tube.material = materials.normal
+            choice = materials.normal
+            break
+        default:
+            choice = materials.lambert
             break
     }
+
+    ring1.material = choice[0]
+    ring2.material = choice[1]
+    ring3.material = choice[2]
+    changeObjectsMaterial(choice[3])
+    mobiusStrip.material = choice[4]
+    tube.material = choice[5]
 }
 
 function changeObjectsMaterial(mat) {
