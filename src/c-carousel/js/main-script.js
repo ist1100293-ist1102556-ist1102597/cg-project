@@ -223,6 +223,7 @@ function createObjects() {
             let geometry = geometries[j]
             let object = new THREE.Mesh(geometry, materials.phong[3])
             let r = distances[i]
+            object.scale.x = object.scale.y = object.scale.z = Math.random() * 0.5 + 0.5
             object.position.set(
                 r * Math.sin((j * Math.PI) / 4),
                 6,
