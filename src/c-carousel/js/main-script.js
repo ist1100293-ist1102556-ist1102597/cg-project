@@ -43,6 +43,14 @@ let materials = {
 }
 let geometries = []
 let pointLights = []
+let colorMap = {
+    innerRing: 0xff0000,
+    middleRing: 0xff8800,
+    outerRing: 0xffff00,
+    geometries: 0x00ffff,
+    cylinder: 0xff0077,
+    mobiusStrip: 0x82d93b,
+}
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -66,7 +74,12 @@ function createScene() {
 //////////////////////
 function createMaterials() {
     'use strict'
-    let colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0x00ffff, 0xff00ff]
+    let colors = [colorMap.innerRing,
+                colorMap.middleRing, 
+                colorMap.outerRing, 
+                colorMap.geometries,
+                colorMap.mobiusStrip,
+                colorMap.cylinder]
     colors.forEach((color) => {
         materials.basic.push(
             new THREE.MeshBasicMaterial({
