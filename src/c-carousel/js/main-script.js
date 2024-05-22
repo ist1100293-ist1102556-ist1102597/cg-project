@@ -50,7 +50,6 @@ let pointLights = []
 function createScene() {
     'use strict'
     scene = new THREE.Scene()
-    scene.add(new THREE.AxesHelper(10))
     generateParametricGeometries()
     createMaterials()
     createTube()
@@ -142,7 +141,6 @@ function createLights() {
             objectsLights.push(spotLight)
             rings[i].add(spotLight)
             rings[i].add(spotLight.target)
-            rings[i].add(new THREE.SpotLightHelper(spotLight))
         }
     }
 
