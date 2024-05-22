@@ -134,9 +134,9 @@ function createLights() {
             let spotLight = new THREE.SpotLight(0xffffff)
             let x = r * Math.sin((j * Math.PI) / 4)
             let z = r * Math.cos((j * Math.PI) / 4)
-            spotLight.position.set(x, 6, z)
+            spotLight.position.set(x, 4.2, z)
             spotLight.target.position.set(x, 100, z)
-            spotLight.angle = Math.PI / 8
+            spotLight.angle = Math.PI / 7.5
             spotLight.intensity = 50
             objectsLights.push(spotLight)
             rings[i].add(spotLight)
