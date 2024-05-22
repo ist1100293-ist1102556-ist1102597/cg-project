@@ -176,6 +176,7 @@ function createRings() {
 
     let extrudeSettings = {
         depth: 4,
+        curveSegments: 64,
     }
 
     let geometry1 = new THREE.ExtrudeGeometry(ring1Shape, extrudeSettings)
@@ -625,6 +626,7 @@ function onKeyUp(e) {
 ///////////////////////
 function switchToStereoCamera() {
     currentCamera = cameras[1] // Stereo Camera
+    scene.position.set(15,0,15)
 }
 
 init()
