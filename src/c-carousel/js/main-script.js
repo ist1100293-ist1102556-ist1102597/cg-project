@@ -55,6 +55,7 @@ function createScene() {
     createMaterials()
     createTube()
     createRings()
+    createLights()
     createObjects()
     createSkydome()
     translateRings()
@@ -489,7 +490,6 @@ function init() {
     window.addEventListener('keyup', onKeyUp)
     createScene()
     createCameras()
-    createLights()
 
     render()
 }
