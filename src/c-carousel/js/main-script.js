@@ -512,22 +512,6 @@ function onKeyDown(e) {
     'use strict'
     switch (e.keyCode) {
         case 68: // D(d)
-            rings.forEach((ring) => {
-                console.log('--------------Ring--------------')
-                console.log(ring.position)
-                ring.children.forEach((object) => {
-                    if (object.geometry instanceof THREE.ExtrudeGeometry) {
-                        console.log('Anel: ' + object.position.y)
-                    }
-
-                    if (object.geometry instanceof ParametricGeometry) {
-                        console.log('Objeto: ' + object.position.y)
-                    }
-                    if (object instanceof THREE.SpotLight) {
-                        console.log('Luz: ' + object.position.y)
-                    }
-                })
-            })
             directionlLightOn = !directionlLightOn
             break
         case 83: // S(s)
