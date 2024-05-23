@@ -162,6 +162,7 @@ function createLights() {
         let x = 2 * Math.sin((i * Math.PI) / 4)
         let z = 2 * Math.cos((i * Math.PI) / 4)
         pointLight.position.set(x, 14.5, z)
+        pointLight.intensity = 10
         pointLights.push(pointLight)
         scene.add(pointLight)
     }
@@ -448,7 +449,7 @@ function update(delta) {
         })
     } else {
         pointLights.forEach((light) => {
-            light.intensity = 1
+            light.intensity = 10
         })
     }
 
